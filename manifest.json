@@ -1,11 +1,10 @@
 {
-  "display_name": "智能输入助手 - Smart Input Assistant",
+  "name": "胡萝卜输入助手",
+  "display_name": "胡萝卜输入助手",
+  "author": "你的名字 (由AI重构)",
   "version": "1.0.0",
+  "description": "一个提供快捷输入特定格式消息（包括文字、语音、表情包等）的UI插件。",
   "manifest_version": 2,
-  "description": "现代化的多功能智能输入插件，支持多种格式化文本、素材管理和移动端优化",
-  "author": "Assistant",
   "js": ["script.js"],
-  "css": ["style.css"],
-  "homepage": "",
-  "tags": ["输入", "格式化", "素材", "mobile"]
+  "css": ["style.css"]
 }
