@@ -1,0 +1,11 @@
+{
+  "display_name": "智能输入助手 - Smart Input Assistant",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "现代化的多功能智能输入插件，支持多种格式化文本、素材管理和移动端优化",
+  "author": "Assistant",
+  "js": ["script.js"],
+  "css": ["style.css"],
+  "homepage": "",
+  "tags": ["输入", "格式化", "素材", "mobile"]
+}

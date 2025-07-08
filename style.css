@@ -1,0 +1,568 @@
+/* 智能输入助手插件样式 (v1.0) */
+:root {
+  --sia-primary-color: #6366f1;
+  --sia-secondary-color: #8b5cf6;
+  --sia-success-color: #10b981;
+  --sia-danger-color: #ef4444;
+  --sia-warning-color: #f59e0b;
+  --sia-bg-primary: rgba(255, 255, 255, 0.95);
+  --sia-bg-secondary: rgba(248, 250, 252, 0.9);
+  --sia-text-primary: #1f2937;
+  --sia-text-secondary: #6b7280;
+  --sia-border-color: rgba(99, 102, 241, 0.2);
+  --sia-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --sia-radius: 16px;
+  --sia-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 主按钮样式 */
+#sia-trigger-button {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--sia-primary-color), var(--sia-secondary-color));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: move;
+  z-index: 2000;
+  transition: var(--sia-transition);
+  box-shadow: var(--sia-shadow);
+  user-select: none;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+#sia-trigger-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+#sia-trigger-button.dragging {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* 主面板样式 */
+#sia-main-panel {
+  position: fixed;
+  width: 380px;
+  max-width: 90vw;
+  background: var(--sia-bg-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--sia-radius);
+  box-shadow: var(--sia-shadow);
+  border: 1px solid var(--sia-border-color);
+  z-index: 2001;
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: var(--sia-transition);
+  pointer-events: none;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#sia-main-panel.active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+/* 面板头部 */
+.sia-panel-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid var(--sia-border-color);
+  background: var(--sia-bg-secondary);
+  border-radius: var(--sia-radius) var(--sia-radius) 0 0;
+}
+
+.sia-panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sia-text-primary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+/* 标签页导航 */
+.sia-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.sia-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--sia-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--sia-transition);
+  position: relative;
+}
+
+.sia-tab.active {
+  background: white;
+  color: var(--sia-primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sia-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 格式显示区域 */
+.sia-format-display {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--sia-text-secondary);
+  text-align: center;
+  font-family: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+/* 面板内容区域 */
+.sia-panel-content {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sia-content-section {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sia-content-section.active {
+  display: flex;
+}
+
+/* 子选项容器 */
+.sia-sub-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sia-sub-option {
+  padding: 8px 16px;
+  border: 2px solid var(--sia-border-color);
+  background: white;
+  color: var(--sia-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--sia-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.sia-sub-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.sia-sub-option:hover::before {
+  left: 100%;
+}
+
+.sia-sub-option.active {
+  background: var(--sia-primary-color);
+  color: white;
+  border-color: var(--sia-primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.sia-sub-option.add-btn {
+  background: var(--sia-success-color);
+  color: white;
+  border-color: var(--sia-success-color);
+  font-weight: 700;
+}
+
+/* 输入框样式 */
+.sia-input,
+.sia-textarea {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--sia-border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--sia-text-primary);
+  background: white;
+  transition: var(--sia-transition);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.sia-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.sia-input:focus,
+.sia-textarea:focus {
+  outline: none;
+  border-color: var(--sia-primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.sia-input::placeholder,
+.sia-textarea::placeholder {
+  color: var(--sia-text-secondary);
+}
+
+/* 多输入行容器 */
+.sia-input-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sia-input-row .sia-input {
+  flex: 1;
+}
+
+/* 网格容器 */
+.sia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--sia-bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--sia-border-color);
+}
+
+.sia-grid-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: var(--sia-transition);
+  border: 2px solid transparent;
+}
+
+.sia-grid-item:hover {
+  transform: scale(1.05);
+}
+
+.sia-grid-item.selected {
+  border-color: var(--sia-primary-color);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.sia-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sia-grid-item .delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  background: var(--sia-danger-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--sia-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sia-grid-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.sia-grid-placeholder {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--sia-text-secondary);
+  padding: 40px 20px;
+  font-style: italic;
+}
+
+/* 面板底部 */
+.sia-panel-footer {
+  padding: 20px;
+  background: var(--sia-bg-secondary);
+  border-top: 1px solid var(--sia-border-color);
+  border-radius: 0 0 var(--sia-radius) var(--sia-radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sia-emoji-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--sia-warning-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: var(--sia-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sia-emoji-btn:hover {
+  transform: scale(1.1);
+  background: #d97706;
+}
+
+.sia-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.sia-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--sia-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.sia-btn-secondary {
+  background: #e5e7eb;
+  color: var(--sia-text-secondary);
+}
+
+.sia-btn-secondary:hover {
+  background: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.sia-btn-primary {
+  background: linear-gradient(135deg, var(--sia-primary-color), var(--sia-secondary-color));
+  color: white;
+}
+
+.sia-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+/* 模态框样式 */
+.sia-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2002;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--sia-transition);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sia-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sia-modal-content {
+  background: var(--sia-bg-primary);
+  border-radius: var(--sia-radius);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-shadow: var(--sia-shadow);
+  transform: scale(0.9);
+  transition: var(--sia-transition);
+}
+
+.sia-modal.active .sia-modal-content {
+  transform: scale(1);
+}
+
+.sia-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sia-text-primary);
+  margin: 0 0 16px 0;
+}
+
+.sia-modal-description {
+  color: var(--sia-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.sia-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Emoji picker 样式 */
+emoji-picker {
+  position: fixed;
+  z-index: 2003;
+  border-radius: 12px;
+  box-shadow: var(--sia-shadow);
+  border: 1px solid var(--sia-border-color);
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  #sia-main-panel {
+    width: calc(100vw - 20px);
+    max-width: 400px;
+  }
+
+  #sia-trigger-button {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+
+  .sia-panel-content {
+    padding: 16px;
+  }
+
+  .sia-tabs {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sia-tab {
+    padding: 12px;
+    text-align: center;
+  }
+
+  .sia-input,
+  .sia-textarea {
+    font-size: 16px; /* 防止移动端缩放 */
+  }
+
+  .sia-input-row {
+    flex-direction: column;
+  }
+
+  .sia-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .sia-modal-content {
+    margin: 10px;
+    padding: 20px;
+  }
+
+  emoji-picker {
+    width: calc(100vw - 40px) !important;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sia-panel-header,
+  .sia-panel-content,
+  .sia-panel-footer {
+    padding: 12px;
+  }
+
+  .sia-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .sia-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 动画效果 */
+@keyframes sia-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sia-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sia-animate-bounce {
+  animation: sia-bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.sia-animate-slide {
+  animation: sia-slide-up 0.4s ease-out;
+}
