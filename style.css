@@ -1,4 +1,4 @@
-/* style.css (v1.8 - 添加颜色设置面板) */
+/* style.css (v1.9 - 添加tabs背景颜色及取色板样式) */
 :root {
   --cip-panel-bg-color: rgba(255, 255, 255, 0.25);
   --cip-border-color: rgba(255, 255, 255, 0.4);
@@ -15,6 +15,8 @@
   --cip-insert-text-color: #ffffff;
   /* 新增：插入按钮hover背景颜色 */
   --cip-insert-hover-bg-color: #e56a40;
+  /* 新增：tabs背景颜色 */
+  --cip-tab-bg-color: transparent;
 }
 
 /* 移动设备触摸优化 */
@@ -99,6 +101,7 @@
   display: flex;
   padding: 8px;
   border-bottom: 1px solid var(--cip-border-color);
+  background: var(--cip-tab-bg-color); /* 新增：应用tabs背景颜色 */
 }
 
 .cip-tab-button {
@@ -121,7 +124,7 @@
 #cip-format-display {
   padding: 5px 12px;
   font-size: 12px;
-  color: var(--cip-title-color); /* 修改：使用标题颜色 */
+  color: var(--cip-title-color);
   background: rgba(0, 0, 0, 0.05);
   text-align: center;
   min-height: 18px;
@@ -258,11 +261,11 @@
 
 #cip-insert-button {
   background-color: var(--cip-accent-color);
-  color: var(--cip-insert-text-color); /* 修改：使用插入按钮字体颜色 */
+  color: var(--cip-insert-text-color);
 }
 
 #cip-insert-button:hover {
-  background-color: var(--cip-insert-hover-bg-color); /* 修改：使用插入按钮hover背景颜色 */
+  background-color: var(--cip-insert-hover-bg-color);
 }
 
 emoji-picker,
@@ -405,12 +408,56 @@ emoji-picker,
   color: var(--cip-text-color);
 }
 
-.cip-color-option input[type="color"] {
-  width: 40px;
-  height: 40px;
+.cip-color-picker {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red), linear-gradient(to bottom, rgba(0,0,0,0), black);
+  cursor: crosshair;
+}
+
+.cip-color-picker .selector {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.cip-color-picker .opacity-slider {
+  width: 20px;
+  height: 200px;
+  background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0), rgba(0,0,0,1));
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.cip-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cip-color-controls input[type="text"] {
+  flex: 1;
+  padding: 5px;
+  border-radius: var(--cip-border-radius);
+  border: 1px solid var(--cip-border-color);
+  background: var(--cip-input-bg-color);
+  font-size: 14px;
+}
+
+.cip-color-controls button {
+  padding: 5px 10px;
+  border-radius: var(--cip-border-radius);
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  background: var(--cip-accent-color);
+  color: var(--cip-insert-text-color);
 }
 
 #cip-color-presets {
@@ -420,12 +467,14 @@ emoji-picker,
   border: 1px solid var(--cip-border-color);
   background: var(--cip-input-bg-color);
   font-size: 14px;
+  margin-top: 10px;
 }
 
 .cip-color-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  margin-top: 10px;
 }
 
 .cip-color-actions button {
@@ -469,9 +518,22 @@ emoji-picker,
     font-size: 13px;
   }
 
-  .cip-color-option input[type="color"] {
-    width: 36px;
-    height: 36px;
+  .cip-color-picker {
+    height: 150px;
+  }
+
+  .cip-color-picker .opacity-slider {
+    height: 150px;
+  }
+
+  .cip-color-controls input[type="text"] {
+    padding: 4px;
+    font-size: 13px;
+  }
+
+  .cip-color-controls button {
+    padding: 4px 8px;
+    font-size: 13px;
   }
 
   .cip-color-actions button {
@@ -547,9 +609,22 @@ emoji-picker,
     font-size: 12px;
   }
 
-  .cip-color-option input[type="color"] {
-    width: 32px;
-    height: 32px;
+  .cip-color-picker {
+    height: 120px;
+  }
+
+  .cip-color-picker .opacity-slider {
+    height: 120px;
+  }
+
+  .cip-color-controls input[type="text"] {
+    padding: 3px;
+    font-size: 12px;
+  }
+
+  .cip-color-controls button {
+    padding: 3px 6px;
+    font-size: 12px;
   }
 
   .cip-color-actions button {
