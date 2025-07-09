@@ -1,4 +1,4 @@
-// script.js (v2.2 - 修复配色名称输入及添加取色板)
+// script.js (v2.2 - 添加功能按钮背景颜色，优化手机端颜色选择，修复配色名称输入)
 (function () {
   if (document.getElementById('cip-carrot-button')) return;
 
@@ -8,7 +8,7 @@
   pickerScript.src = 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
   document.head.appendChild(pickerScript);
 
-  // --- 1. 创建所有UI元素 (修改颜色设置面板为取色板) ---
+  // --- 1. 创建所有UI元素 (已修改，添加颜色选择模态框) ---
   function createUI() {
     const create = (tag, id, className, html) => {
       const el = document.createElement(tag);
@@ -89,115 +89,49 @@
       'cip-frosted-glass',
       `
             <h3>自定义颜色</h3>
-            <div class="cip-color-option" data-target="panelBg">
+            <div class="cip-color-option">
                 <label>面板背景颜色</label>
-                <div class="cip-color-picker" data-target="panelBg">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-panel-bg-hex" placeholder="#000000">
-                    <button id="cip-color-panel-bg-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-panel-bg" value="#ffffff">
             </div>
-            <div class="cip-color-option" data-target="border">
+            <div class="cip-color-option">
                 <label>边框颜色</label>
-                <div class="cip-color-picker" data-target="border">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-border-hex" placeholder="#000000">
-                    <button id="cip-color-border-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-border" value="#ffffff">
             </div>
-            <div class="cip-color-option" data-target="text">
+            <div class="cip-color-option">
                 <label>功能栏字体颜色</label>
-                <div class="cip-color-picker" data-target="text">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-text-hex" placeholder="#000000">
-                    <button id="cip-color-text-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-text" value="#333333">
             </div>
-            <div class="cip-color-option" data-target="title">
+            <div class="cip-color-option">
                 <label>功能标题颜色</label>
-                <div class="cip-color-picker" data-target="title">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-title-hex" placeholder="#000000">
-                    <button id="cip-color-title-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-title" value="#333333">
             </div>
-            <div class="cip-color-option" data-target="accent">
+            <div class="cip-color-option">
                 <label>高亮/按钮颜色</label>
-                <div class="cip-color-picker" data-target="accent">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-accent-hex" placeholder="#000000">
-                    <button id="cip-color-accent-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-accent" value="#ff7f50">
             </div>
-            <div class="cip-color-option" data-target="activeBg">
+            <div class="cip-color-option">
                 <label>高亮背景颜色</label>
-                <div class="cip-color-picker" data-target="activeBg">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-active-bg-hex" placeholder="#000000">
-                    <button id="cip-color-active-bg-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-active-bg" value="#ff7f50">
             </div>
-            <div class="cip-color-option" data-target="inputBg">
+            <div class="cip-color-option">
                 <label>输入框背景颜色</label>
-                <div class="cip-color-picker" data-target="inputBg">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-input-bg-hex" placeholder="#000000">
-                    <button id="cip-color-input-bg-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-input-bg" value="#ffffff">
             </div>
-            <div class="cip-color-option" data-target="delete">
+            <div class="cip-color-option">
                 <label>删除按钮颜色</label>
-                <div class="cip-color-picker" data-target="delete">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-delete-hex" placeholder="#000000">
-                    <button id="cip-color-delete-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-delete" value="#e74c3c">
             </div>
-            <div class="cip-color-option" data-target="insertText">
+            <div class="cip-color-option">
                 <label>插入按钮字体颜色</label>
-                <div class="cip-color-picker" data-target="insertText">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-insert-text-hex" placeholder="#000000">
-                    <button id="cip-color-insert-text-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-insert-text" value="#ffffff">
             </div>
-            <div class="cip-color-option" data-target="insertHoverBg">
+            <div class="cip-color-option">
                 <label>插入按钮Hover颜色</label>
-                <div class="cip-color-picker" data-target="insertHoverBg">
-                    <div class="selector"></div>
-                    <div class="opacity-slider"></div>
-                </div>
-                <div class="cip-color-controls">
-                    <input type="text" id="cip-color-insert-hover-bg-hex" placeholder="#000000">
-                    <button id="cip-color-insert-hover-bg-save">保存</button>
-                </div>
+                <input type="text" id="cip-color-insert-hover-bg" value="#e56a40">
+            </div>
+            <div class="cip-color-option">
+                <label>功能按钮背景颜色</label>
+                <input type="text" id="cip-color-tabs-bg" value="#ffffff">
             </div>
             <div class="cip-color-option">
                 <label>保存配色方案</label>
@@ -212,11 +146,26 @@
             </div>
         `,
     );
-    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel };
+    const colorPickerModal = create(
+      'div',
+      'cip-color-picker-modal',
+      'cip-frosted-glass hidden',
+      `
+            <div class="cip-color-picker-content">
+                <h3>输入颜色代码</h3>
+                <input type="text" id="cip-color-picker-input" placeholder="#D4B483">
+                <div class="cip-modal-actions">
+                    <button id="cip-color-picker-cancel">取消</button>
+                    <button id="cip-color-picker-save">保存</button>
+                </div>
+            </div>
+        `,
+    );
+    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel, colorPickerModal };
   }
 
   // --- 2. 注入UI到页面中 ---
-  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel } = createUI();
+  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel, colorPickerModal } = createUI();
   const anchor = document.querySelector('#chat-buttons-container, #send_form');
   if (anchor) {
     document.body.appendChild(carrotButton);
@@ -225,12 +174,13 @@
     document.body.appendChild(addCategoryModal);
     document.body.appendChild(addStickersModal);
     document.body.appendChild(colorSettingsPanel);
+    document.body.appendChild(colorPickerModal);
   } else {
     console.error('胡萝卜输入面板：未能找到SillyTavern的UI挂载点，插件无法加载。');
     return;
   }
 
-  // --- 3. 获取所有元素的引用 (更新颜色设置相关引用) ---
+  // --- 3. 获取所有元素的引用 (已修改，添加颜色选择模态框相关引用) ---
   const get = id => document.getElementById(id);
   const queryAll = sel => document.querySelectorAll(sel);
   const formatDisplay = get('cip-format-display'),
@@ -253,20 +203,33 @@
     cancelStickersBtn = get('cip-cancel-stickers-btn'),
     newStickersInput = get('cip-new-stickers-input');
   const colorPanel = get('cip-color-settings-panel'),
-    colorPickers = queryAll('.cip-color-picker'),
-    colorHexInputs = queryAll('.cip-color-controls input[type="text"]'),
-    colorSaveButtons = queryAll('.cip-color-controls button'),
+    colorPanelBgInput = get('cip-color-panel-bg'),
+    colorBorderInput = get('cip-color-border'),
+    colorTextInput = get('cip-color-text'),
+    colorTitleInput = get('cip-color-title'),
+    colorAccentInput = get('cip-color-accent'),
+    colorActiveBgInput = get('cip-color-active-bg'),
+    colorInputBgInput = get('cip-color-input-bg'),
+    colorDeleteInput = get('cip-color-delete'),
+    colorInsertTextInput = get('cip-color-insert-text'),
+    colorInsertHoverBgInput = get('cip-color-insert-hover-bg'),
+    colorTabsBgInput = get('cip-color-tabs-bg'),
     colorPresetNameInput = get('cip-color-preset-name'),
     colorPresetsSelect = get('cip-color-presets'),
     colorCancelBtn = get('cip-color-cancel-btn'),
     colorSaveBtn = get('cip-color-save-btn');
+  const colorPickerModalEl = get('cip-color-picker-modal'),
+    colorPickerInput = get('cip-color-picker-input'),
+    colorPickerCancel = get('cip-color-picker-cancel'),
+    colorPickerSave = get('cip-color-picker-save');
 
-  // --- 4. 核心逻辑与事件监听 (修改颜色设置逻辑) ---
+  // --- 4. 核心逻辑与事件监听 (已修改，添加颜色选择模态框逻辑) ---
   let currentTab = 'text',
     currentTextSubType = 'plain',
     stickerData = {},
     currentStickerCategory = '',
-    selectedSticker = null;
+    selectedSticker = null,
+    currentColorInput = null;
   let colorPresets = {};
   const formatTemplates = {
     text: {
@@ -294,7 +257,7 @@
     delete: '#e74c3c',
     insertText: '#ffffff',
     insertHoverBg: '#e56a40',
-    tabBg: '#00000000', // 默认透明
+    tabsBg: '#ffffff',
   };
 
   function updateFormatDisplay() {
@@ -458,8 +421,6 @@
   }
 
   // --- 颜色设置相关逻辑 ---
-  let currentColorPicker = null;
-
   function saveColorPreset() {
     const presetName = colorPresetNameInput.value.trim();
     if (!presetName) {
@@ -470,17 +431,17 @@
       if (!confirm(`配色方案「${presetName}」已存在，是否覆盖？`)) return;
     }
     colorPresets[presetName] = {
-      panelBg: getComputedStyle(document.documentElement).getPropertyValue('--cip-panel-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0],
-      border: getComputedStyle(document.documentElement).getPropertyValue('--cip-border-color').match(/\d+,\s*\d+,\s*\d+/)[0],
-      text: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-text-color')),
-      title: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-title-color')),
-      accent: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-accent-color')),
-      activeBg: getComputedStyle(document.documentElement).getPropertyValue('--cip-active-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0],
-      inputBg: getComputedStyle(document.documentElement).getPropertyValue('--cip-input-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0],
-      delete: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-delete-color')),
-      insertText: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-insert-text-color')),
-      insertHoverBg: rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--cip-insert-hover-bg-color')),
-      tabBg: getComputedStyle(document.documentElement).getPropertyValue('--cip-tab-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0],
+      panelBg: colorPanelBgInput.value,
+      border: colorBorderInput.value,
+      text: colorTextInput.value,
+      title: colorTitleInput.value,
+      accent: colorAccentInput.value,
+      activeBg: colorActiveBgInput.value,
+      inputBg: colorInputBgInput.value,
+      delete: colorDeleteInput.value,
+      insertText: colorInsertTextInput.value,
+      insertHoverBg: colorInsertHoverBgInput.value,
+      tabsBg: colorTabsBgInput.value,
     };
     localStorage.setItem('cip_color_presets', JSON.stringify(colorPresets));
     renderColorPresets();
@@ -491,19 +452,18 @@
   function loadColorPreset(presetName) {
     if (!presetName || !colorPresets[presetName]) return;
     const preset = colorPresets[presetName];
-    const root = document.documentElement;
-    root.style.setProperty('--cip-panel-bg-color', `rgba(${preset.panelBg}, 0.25)`);
-    root.style.setProperty('--cip-border-color', `rgba(${preset.border}, 0.4)`);
-    root.style.setProperty('--cip-text-color', rgbToHex(`rgb(${preset.text})`));
-    root.style.setProperty('--cip-title-color', rgbToHex(`rgb(${preset.title})`));
-    root.style.setProperty('--cip-accent-color', rgbToHex(`rgb(${preset.accent})`));
-    root.style.setProperty('--cip-active-bg-color', `rgba(${preset.activeBg}, 0.3)`);
-    root.style.setProperty('--cip-input-bg-color', `rgba(${preset.inputBg}, 0.5)`);
-    root.style.setProperty('--cip-delete-color', rgbToHex(`rgb(${preset.delete})`));
-    root.style.setProperty('--cip-insert-text-color', rgbToHex(`rgb(${preset.insertText})`));
-    root.style.setProperty('--cip-insert-hover-bg-color', rgbToHex(`rgb(${preset.insertHoverBg})`));
-    root.style.setProperty('--cip-tab-bg-color', `rgba(${preset.tabBg}, 1)`);
-    updateColorInputs();
+    colorPanelBgInput.value = preset.panelBg;
+    colorBorderInput.value = preset.border;
+    colorTextInput.value = preset.text;
+    colorTitleInput.value = preset.title;
+    colorAccentInput.value = preset.accent;
+    colorActiveBgInput.value = preset.activeBg;
+    colorInputBgInput.value = preset.inputBg;
+    colorDeleteInput.value = preset.delete;
+    colorInsertTextInput.value = preset.insertText;
+    colorInsertHoverBgInput.value = preset.insertHoverBg;
+    colorTabsBgInput.value = preset.tabsBg;
+    applyColors();
   }
 
   function renderColorPresets() {
@@ -516,49 +476,19 @@
     });
   }
 
-  function applyColors(target, rgb) {
+  function applyColors() {
     const root = document.documentElement;
-    switch (target) {
-      case 'panelBg':
-        root.style.setProperty('--cip-panel-bg-color', `rgba(${rgb}, 0.25)`);
-        break;
-      case 'border':
-        root.style.setProperty('--cip-border-color', `rgba(${rgb}, 0.4)`);
-        break;
-      case 'text':
-        root.style.setProperty('--cip-text-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'title':
-        root.style.setProperty('--cip-title-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'accent':
-        root.style.setProperty('--cip-accent-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'activeBg':
-        root.style.setProperty('--cip-active-bg-color', `rgba(${rgb}, 0.3)`);
-        break;
-      case 'inputBg':
-        root.style.setProperty('--cip-input-bg-color', `rgba(${rgb}, 0.5)`);
-        break;
-      case 'delete':
-        root.style.setProperty('--cip-delete-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'insertText':
-        root.style.setProperty('--cip-insert-text-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'insertHoverBg':
-        root.style.setProperty('--cip-insert-hover-bg-color', rgbToHex(`rgb(${rgb})`));
-        break;
-      case 'tabBg':
-        root.style.setProperty('--cip-tab-bg-color', `rgba(${rgb}, 1)`);
-        break;
-    }
-    updateColorInputs();
-  }
-
-  function rgbToHex(rgb) {
-    const [r, g, b] = rgb.match(/\d+/g).map(Number);
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+    root.style.setProperty('--cip-panel-bg-color', `rgba(${hexToRgb(colorPanelBgInput.value)}, 0.25)`);
+    root.style.setProperty('--cip-border-color', `rgba(${hexToRgb(colorBorderInput.value)}, 0.4)`);
+    root.style.setProperty('--cip-text-color', colorTextInput.value);
+    root.style.setProperty('--cip-title-color', colorTitleInput.value);
+    root.style.setProperty('--cip-accent-color', colorAccentInput.value);
+    root.style.setProperty('--cip-active-bg-color', `rgba(${hexToRgb(colorActiveBgInput.value)}, 0.3)`);
+    root.style.setProperty('--cip-input-bg-color', `rgba(${hexToRgb(colorInputBgInput.value)}, 0.5)`);
+    root.style.setProperty('--cip-delete-color', colorDeleteInput.value);
+    root.style.setProperty('--cip-insert-text-color', colorInsertTextInput.value);
+    root.style.setProperty('--cip-insert-hover-bg-color', colorInsertHoverBgInput.value);
+    root.style.setProperty('--cip-tabs-bg-color', colorTabsBgInput.value);
   }
 
   function hexToRgb(hex) {
@@ -568,119 +498,19 @@
     return `${r}, ${g}, ${b}`;
   }
 
-  function updateColorInputs() {
-    const style = getComputedStyle(document.documentElement);
-    colorHexInputs[0].value = rgbToHex(`rgb(${style.getPropertyValue('--cip-panel-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0]})`);
-    colorHexInputs[1].value = rgbToHex(`rgb(${style.getPropertyValue('--cip-border-color').match(/\d+,\s*\d+,\s*\d+/)[0]})`);
-    colorHexInputs[2].value = rgbToHex(style.getPropertyValue('--cip-text-color'));
-    colorHexInputs[3].value = rgbToHex(style.getPropertyValue('--cip-title-color'));
-    colorHexInputs[4].value = rgbToHex(style.getPropertyValue('--cip-accent-color'));
-    colorHexInputs[5].value = rgbToHex(`rgb(${style.getPropertyValue('--cip-active-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0]})`);
-    colorHexInputs[6].value = rgbToHex(`rgb(${style.getPropertyValue('--cip-input-bg-color').match(/\d+,\s*\d+,\s*\d+/)[0]})`);
-    colorHexInputs[7].value = rgbToHex(style.getPropertyValue('--cip-delete-color'));
-    colorHexInputs[8].value = rgbToHex(style.getPropertyValue('--cip-insert-text-color'));
-    colorHexInputs[9].value = rgbToHex(style.getPropertyValue('--cip-insert-hover-bg-color'));
-  }
-
-  function initColorPicker(picker) {
-    const selector = picker.querySelector('.selector');
-    const opacitySlider = picker.querySelector('.opacity-slider');
-    let isDragging = false;
-
-    picker.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      updateColor(e, picker);
-    });
-
-    picker.addEventListener('mousemove', (e) => {
-      if (isDragging) updateColor(e, picker);
-    });
-
-    picker.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    opacitySlider.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      updateOpacity(e, picker);
-    });
-
-    opacitySlider.addEventListener('mousemove', (e) => {
-      if (isDragging) updateOpacity(e, picker);
-    });
-
-    opacitySlider.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    function updateColor(e, picker) {
-      const rect = picker.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const width = rect.width - opacitySlider.offsetWidth;
-      const height = rect.height;
-      const newX = Math.max(0, Math.min(width, x));
-      const newY = Math.max(0, Math.min(height, y));
-      selector.style.left = `${newX - 5}px`;
-      selector.style.top = `${newY - 5}px`;
-
-      const ctx = document.createElement('canvas').getContext('2d');
-      ctx.canvas.width = width;
-      ctx.canvas.height = height;
-      const gradient1 = ctx.createLinearGradient(0, 0, width, 0);
-      gradient1.addColorStop(0, 'red');
-      gradient1.addColorStop(1/6, 'yellow');
-      gradient1.addColorStop(2/6, 'lime');
-      gradient1.addColorStop(3/6, 'cyan');
-      gradient1.addColorStop(4/6, 'blue');
-      gradient1.addColorStop(5/6, 'magenta');
-      gradient1.addColorStop(1, 'red');
-      ctx.fillStyle = gradient1;
-      ctx.fillRect(0, 0, width, height);
-      const gradient2 = ctx.createLinearGradient(0, 0, 0, height);
-      gradient2.addColorStop(0, 'rgba(255,255,255,1)');
-      gradient2.addColorStop(0.5, 'rgba(255,255,255,0)');
-      gradient2.addColorStop(1, 'rgba(0,0,0,1)');
-      ctx.fillStyle = gradient2;
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.fillRect(0, 0, width, height);
-      const imageData = ctx.getImageData(newX, newY, 1, 1).data;
-      const rgb = `${imageData[0]}, ${imageData[1]}, ${imageData[2]}`;
-      applyColors(picker.dataset.target, rgb);
-      const hexInput = picker.nextElementSibling.querySelector('input');
-      hexInput.value = rgbToHex(`rgb(${rgb})`);
-    }
-
-    function updateOpacity(e, picker) {
-      const rect = opacitySlider.getBoundingClientRect();
-      const y = e.clientY - rect.top;
-      const height = rect.height;
-      const opacity = Math.max(0, Math.min(1, 1 - y / height));
-      const rgb = getComputedStyle(picker).backgroundColor.match(/\d+,\s*\d+,\s*\d+/)[0];
-      applyColors(picker.dataset.target, rgb);
-      const hexInput = picker.nextElementSibling.querySelector('input');
-      hexInput.value = rgbToHex(`rgb(${rgb})`);
-    }
-  }
-
   function loadDefaultColors() {
-    const root = document.documentElement;
-    root.style.setProperty('--cip-panel-bg-color', `rgba(${hexToRgb(defaultColors.panelBg)}, 0.25)`);
-    root.style.setProperty('--cip-border-color', `rgba(${hexToRgb(defaultColors.border)}, 0.4)`);
-    root.style.setProperty('--cip-text-color', defaultColors.text);
-    root.style.setProperty('--cip-title-color', defaultColors.title);
-    root.style.setProperty('--cip-accent-color', defaultColors.accent);
-    root.style.setProperty('--cip-active-bg-color', `rgba(${hexToRgb(defaultColors.activeBg)}, 0.3)`);
-    root.style.setProperty('--cip-input-bg-color', `rgba(${hexToRgb(defaultColors.inputBg)}, 0.5)`);
-    root.style.setProperty('--cip-delete-color', defaultColors.delete);
-    root.style.setProperty('--cip-insert-text-color', defaultColors.insertText);
-    root.style.setProperty('--cip-insert-hover-bg-color', defaultColors.insertHoverBg);
-    root.style.setProperty('--cip-tab-bg-color', `rgba(${hexToRgb(defaultColors.tabBg)}, 1)`);
-    updateColorInputs();
+    colorPanelBgInput.value = defaultColors.panelBg;
+    colorBorderInput.value = defaultColors.border;
+    colorTextInput.value = defaultColors.text;
+    colorTitleInput.value = defaultColors.title;
+    colorAccentInput.value = defaultColors.accent;
+    colorActiveBgInput.value = defaultColors.activeBg;
+    colorInputBgInput.value = defaultColors.inputBg;
+    colorDeleteInput.value = defaultColors.delete;
+    colorInsertTextInput.value = defaultColors.insertText;
+    colorInsertHoverBgInput.value = defaultColors.insertHoverBg;
+    colorTabsBgInput.value = defaultColors.tabsBg;
+    applyColors();
   }
 
   function loadSavedColorPresets() {
@@ -689,6 +519,28 @@
       colorPresets = JSON.parse(saved);
       renderColorPresets();
     }
+  }
+
+  function openColorPicker(input) {
+    currentColorInput = input;
+    colorPickerInput.value = input.value;
+    const btnRect = input.getBoundingClientRect();
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      const modalWidth = 300;
+      const modalHeight = 200;
+      const left = Math.max(10, (window.innerWidth - modalWidth) / 2);
+      const top = Math.max(10, (window.innerHeight - modalHeight) / 2);
+      colorPickerModalEl.style.top = `${top}px`;
+      colorPickerModalEl.style.left = `${left}px`;
+    } else {
+      let top = btnRect.top - 200 - 10;
+      if (top < 10) top = btnRect.bottom + 10;
+      colorPickerModalEl.style.top = `${top}px`;
+      colorPickerModalEl.style.left = `${btnRect.left}px`;
+    }
+    colorPickerModalEl.style.display = 'block';
+    colorPickerInput.focus();
   }
 
   colorSettingsButton.addEventListener('click', e => {
@@ -726,33 +578,37 @@
     colorPanel.style.display = 'none';
   });
 
-  colorPickers.forEach(picker => initColorPicker(picker));
-  colorSaveButtons.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      const target = btn.parentElement.parentElement.dataset.target;
-      const rgb = getComputedStyle(document.documentElement).getPropertyValue(`--cip-${target}-color`).match(/\d+,\s*\d+,\s*\d+/)[0] || getComputedStyle(document.documentElement).getPropertyValue(`--cip-${target}`).match(/\d+,\s*\d+,\s*\d+/)[0];
-      applyColors(target, rgb);
+  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput, colorTabsBgInput].forEach(input => {
+    input.addEventListener('click', e => {
+      e.stopPropagation();
+      openColorPicker(input);
+    });
+    input.addEventListener('input', e => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(input.value)) {
+        applyColors();
+      }
     });
   });
 
-  document.addEventListener('click', e => {
-    if (inputPanel.classList.contains('active') && !inputPanel.contains(e.target) && !carrotButton.contains(e.target))
-      hidePanel();
-    if (
-      emojiPicker.style.display === 'block' &&
-      !emojiPicker.contains(e.target) &&
-      !emojiPickerBtn.contains(e.target)
-    ) {
-      emojiPicker.style.display = 'none';
+  colorPickerCancel.addEventListener('click', () => {
+    colorPickerModalEl.style.display = 'none';
+    currentColorInput = null;
+  });
+
+  colorPickerSave.addEventListener('click', () => {
+    const value = colorPickerInput.value.trim();
+    if (/^#[0-9A-Fa-f]{6}$/.test(value) && currentColorInput) {
+      currentColorInput.value = value;
+      applyColors();
+      colorPickerModalEl.style.display = 'none';
+      currentColorInput = null;
+    } else {
+      alert('请输入有效的颜色代码（如 #D4B483）！');
     }
-    if (
-      colorPanel.style.display === 'block' &&
-      !colorPanel.contains(e.target) &&
-      !colorSettingsButton.contains(e.target) &&
-      !colorPresetNameInput.contains(e.target)
-    ) {
-      colorPanel.style.display = 'none';
-    }
+  });
+
+  colorPresetsSelect.addEventListener('change', e => {
+    loadColorPreset(e.target.value);
   });
 
   emojiPicker.addEventListener('emoji-click', event => {
@@ -919,6 +775,39 @@
     inputPanel.classList.remove('active');
   }
 
+  document.addEventListener('click', e => {
+    if (
+      inputPanel.classList.contains('active') &&
+      !inputPanel.contains(e.target) &&
+      !carrotButton.contains(e.target)
+    ) {
+      hidePanel();
+    }
+    if (
+      emojiPicker.style.display === 'block' &&
+      !emojiPicker.contains(e.target) &&
+      !emojiPickerBtn.contains(e.target)
+    ) {
+      emojiPicker.style.display = 'none';
+    }
+    if (
+      colorPanel.style.display === 'block' &&
+      !colorPanel.contains(e.target) &&
+      !colorSettingsButton.contains(e.target) &&
+      !colorPickerModalEl.contains(e.target)
+    ) {
+      colorPanel.style.display = 'none';
+    }
+    if (
+      colorPickerModalEl.style.display === 'block' &&
+      !colorPickerModalEl.contains(e.target) &&
+      !colorPanel.contains(e.target)
+    ) {
+      colorPickerModalEl.style.display = 'none';
+      currentColorInput = null;
+    }
+  });
+
   function dragHandler(e) {
     let isClick = true;
     if (e.type === 'touchstart') e.preventDefault();
@@ -985,6 +874,12 @@
       if (colorPanel.style.display === 'block') {
         setTimeout(() => {
           colorPanel.style.display = 'none';
+        }, 100);
+      }
+      if (colorPickerModalEl.style.display === 'block') {
+        setTimeout(() => {
+          colorPickerModalEl.style.display = 'none';
+          currentColorInput = null;
         }, 100);
       }
     });
