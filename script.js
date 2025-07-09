@@ -1,4 +1,4 @@
-// script.js (v2.3 - 优化电脑端颜色面板居中，修复手机端输入框关闭问题)
+// script.js (v2.4 - 修复点击配色名称输入框导致主面板和颜色面板关闭的问题)
 (function () {
   if (document.getElementById('cip-carrot-button')) return;
 
@@ -529,13 +529,13 @@
     colorPanel.style.display = 'none';
   });
 
-  // 修复手机端点击配色名称输入框关闭面板的问题
+  // 修复点击配色名称输入框关闭主面板和颜色面板的问题
   colorPresetNameInput.addEventListener('click', e => e.stopPropagation());
   colorPresetNameInput.addEventListener('focus', e => e.stopPropagation());
 
   [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorTabsBgInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput].forEach(input => {
     input.addEventListener('input', applyColors);
-    input.addEventListener('click', e => e.stopPropagation()); // 防止点击颜色选择器关闭面板
+    input.addEventListener('click', e => e.stopPropagation());
   });
 
   colorPresetsSelect.addEventListener('change', e => {
@@ -544,6 +544,7 @@
   });
 
   emojiPicker.addEventListener('emoji-click', event => {
+    event.stopPropagation();
     const emoji = event.detail.unicode;
     let target;
     if (currentTab === 'text') target = mainInput;
@@ -585,14 +586,26 @@
   });
 
   queryAll('.cip-tab-button').forEach(button =>
-    button.addEventListener('click', e => switchTab(e.currentTarget.dataset.tab)),
+    button.addEventListener('click', e => {
+      e.stopPropagation();
+      switchTab(e.currentTarget.dataset.tab);
+    }),
   );
-  queryAll('#cip-text-content .cip-sub-option-btn').forEach(button =>
-    button.addEventListener('click', e => switchTextSubType(e.currentTarget.dataset.type)),
-  );
-  recallButton.addEventListener('click', () => insertIntoSillyTavern(formatTemplates.recall));
 
-  insertButton.addEventListener('click', () => {
+  queryAll('#cip-text-content .cip-sub-option-btn').forEach(button =>
+    button.addEventListener('click', e => {
+      e.stopPropagation();
+      switchTextSubType(e.currentTarget.dataset.type);
+    }),
+  );
+
+  recallButton.addEventListener('click', e => {
+    e.stopPropagation();
+    insertIntoSillyTavern(formatTemplates.recall);
+  });
+
+  insertButton.addEventListener('click', e => {
+    e.stopPropagation();
     let formattedText = '';
     let inputToClear = null;
     switch (currentTab) {
@@ -633,15 +646,20 @@
     }
   });
 
-  addCategoryBtn.addEventListener('click', () => {
+  addCategoryBtn.addEventListener('click', e => {
+    e.stopPropagation();
     newCategoryNameInput.value = '';
     toggleModal('cip-add-category-modal', true);
     newCategoryNameInput.focus();
   });
 
-  cancelCategoryBtn.addEventListener('click', () => toggleModal('cip-add-category-modal', false));
+  cancelCategoryBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleModal('cip-add-category-modal', false);
+  });
 
-  saveCategoryBtn.addEventListener('click', () => {
+  saveCategoryBtn.addEventListener('click', e => {
+    e.stopPropagation();
     const name = newCategoryNameInput.value.trim();
     if (name && !stickerData[name]) {
       stickerData[name] = [];
@@ -653,9 +671,13 @@
     else alert('请输入有效的分类名称！');
   });
 
-  cancelStickersBtn.addEventListener('click', () => toggleModal('cip-add-stickers-modal', false));
+  cancelStickersBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleModal('cip-add-stickers-modal', false);
+  });
 
-  saveStickersBtn.addEventListener('click', () => {
+  saveStickersBtn.addEventListener('click', e => {
+    e.stopPropagation();
     const category = addStickersModal.dataset.currentCategory;
     const text = newStickersInput.value.trim();
     if (!category || !text) return;
@@ -708,19 +730,14 @@
   }
 
   document.addEventListener('click', e => {
+    // 优化全局点击事件，确保点击颜色设置面板内部不关闭主面板或颜色面板
     if (
       inputPanel.classList.contains('active') &&
       !inputPanel.contains(e.target) &&
-      !carrotButton.contains(e.target)
+      !carrotButton.contains(e.target) &&
+      !colorPanel.contains(e.target)
     ) {
       hidePanel();
-    }
-    if (
-      emojiPicker.style.display === 'block' &&
-      !emojiPicker.contains(e.target) &&
-      !emojiPickerBtn.contains(e.target)
-    ) {
-      emojiPicker.style.display = 'none';
     }
     if (
       colorPanel.style.display === 'block' &&
@@ -728,6 +745,13 @@
       !colorSettingsButton.contains(e.target)
     ) {
       colorPanel.style.display = 'none';
+    }
+    if (
+      emojiPicker.style.display === 'block' &&
+      !emojiPicker.contains(e.target) &&
+      !emojiPickerBtn.contains(e.target)
+    ) {
+      emojiPicker.style.display = 'none';
     }
   });
 
