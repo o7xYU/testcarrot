@@ -1,4 +1,4 @@
-/* style.css (v2.0 - 调整颜色设置面板为模态窗口，统一手机端和电脑端选色模式) */
+/* style.css (v2.1 - 优化颜色设置按钮样式，确保可点击) */
 :root {
   --cip-panel-bg-color: rgba(255, 255, 255, 0.25);
   --cip-border-color: rgba(255, 255, 255, 0.4);
@@ -221,6 +221,8 @@
   opacity: 0.7;
   transition: opacity var(--cip-transition-speed);
   position: relative;
+  pointer-events: auto; /* 确保可点击 */
+  z-index: 1002; /* 提高层级，防止被覆盖 */
 }
 
 #cip-emoji-picker-btn:hover,
@@ -270,7 +272,6 @@ emoji-picker {
   max-height: calc(100vh - 20px);
 }
 
-/* 修改：颜色设置面板为模态窗口，样式与cip-modal-content一致 */
 #cip-color-settings-panel {
   position: absolute;
   top: auto;
