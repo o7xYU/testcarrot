@@ -1,4 +1,4 @@
-// script.js (v2.3 - 调整颜色设置面板为模态窗口，修复手机端配色名称输入问题)
+// script.js (v2.3 - 优化电脑端颜色面板居中，修复手机端输入框关闭问题)
 (function () {
   if (document.getElementById('cip-carrot-button')) return;
 
@@ -86,65 +86,63 @@
     const colorSettingsPanel = create(
       'div',
       'cip-color-settings-panel',
-      'cip-modal-backdrop hidden',
+      'cip-frosted-glass',
       `
-            <div class="cip-color-settings-content cip-frosted-glass">
-                <h3>自定义颜色</h3>
-                <div class="cip-color-option">
-                    <label>面板背景颜色</label>
-                    <input type="color" id="cip-color-panel-bg" value="#ffffff">
-                </div>
-                <div class="cip-color-option">
-                    <label>边框颜色</label>
-                    <input type="color" id="cip-color-border" value="#ffffff">
-                </div>
-                <div class="cip-color-option">
-                    <label>功能栏字体颜色</label>
-                    <input type="color" id="cip-color-text" value="#333333">
-                </div>
-                <div class="cip-color-option">
-                    <label>功能标题颜色</label>
-                    <input type="color" id="cip-color-title" value="#333333">
-                </div>
-                <div class="cip-color-option">
-                    <label>功能按钮背景颜色</label>
-                    <input type="color" id="cip-color-tabs-bg" value="#ffffff">
-                </div>
-                <div class="cip-color-option">
-                    <label>高亮/按钮颜色</label>
-                    <input type="color" id="cip-color-accent" value="#ff7f50">
-                </div>
-                <div class="cip-color-option">
-                    <label>高亮背景颜色</label>
-                    <input type="color" id="cip-color-active-bg" value="#ff7f50">
-                </div>
-                <div class="cip-color-option">
-                    <label>输入框背景颜色</label>
-                    <input type="color" id="cip-color-input-bg" value="#ffffff">
-                </div>
-                <div class="cip-color-option">
-                    <label>删除按钮颜色</label>
-                    <input type="color" id="cip-color-delete" value="#e74c3c">
-                </div>
-                <div class="cip-color-option">
-                    <label>插入按钮字体颜色</label>
-                    <input type="color" id="cip-color-insert-text" value="#ffffff">
-                </div>
-                <div class="cip-color-option">
-                    <label>插入按钮Hover颜色</label>
-                    <input type="color" id="cip-color-insert-hover-bg" value="#e56a40">
-                </div>
-                <div class="cip-color-option">
-                    <label>保存配色方案</label>
-                    <input type="text" id="cip-color-preset-name" placeholder="输入配色名称">
-                </div>
-                <select id="cip-color-presets">
-                    <option value="">选择已有配色方案</option>
-                </select>
-                <div class="cip-color-actions">
-                    <button id="cip-color-cancel-btn">取消</button>
-                    <button id="cip-color-save-btn">保存</button>
-                </div>
+            <h3>自定义颜色</h3>
+            <div class="cip-color-option">
+                <label>面板背景颜色</label>
+                <input type="color" id="cip-color-panel-bg" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>边框颜色</label>
+                <input type="color" id="cip-color-border" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>功能栏字体颜色</label>
+                <input type="color" id="cip-color-text" value="#333333">
+            </div>
+            <div class="cip-color-option">
+                <label>功能标题颜色</label>
+                <input type="color" id="cip-color-title" value="#333333">
+            </div>
+            <div class="cip-color-option">
+                <label>功能按钮背景颜色</label>
+                <input type="color" id="cip-color-tabs-bg" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>高亮/按钮颜色</label>
+                <input type="color" id="cip-color-accent" value="#ff7f50">
+            </div>
+            <div class="cip-color-option">
+                <label>高亮背景颜色</label>
+                <input type="color" id="cip-color-active-bg" value="#ff7f50">
+            </div>
+            <div class="cip-color-option">
+                <label>输入框背景颜色</label>
+                <input type="color" id="cip-color-input-bg" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>删除按钮颜色</label>
+                <input type="color" id="cip-color-delete" value="#e74c3c">
+            </div>
+            <div class="cip-color-option">
+                <label>插入按钮字体颜色</label>
+                <input type="color" id="cip-color-insert-text" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>插入按钮Hover颜色</label>
+                <input type="color" id="cip-color-insert-hover-bg" value="#e56a40">
+            </div>
+            <div class="cip-color-option">
+                <label>保存配色方案</label>
+                <input type="text" id="cip-color-preset-name" placeholder="输入配色名称">
+            </div>
+            <select id="cip-color-presets">
+                <option value="">选择已有配色方案</option>
+            </select>
+            <div class="cip-color-actions">
+                <button id="cip-color-cancel-btn">取消</button>
+                <button id="cip-color-save-btn">保存</button>
             </div>
         `,
     );
@@ -502,31 +500,47 @@
     }
   }
 
-  // 修改：颜色设置面板使用模态窗口逻辑
   colorSettingsButton.addEventListener('click', e => {
     e.stopPropagation();
-    toggleModal('cip-color-settings-panel', !colorPanel.classList.contains('hidden'));
+    const isVisible = colorPanel.style.display === 'block';
+    if (isVisible) {
+      colorPanel.style.display = 'none';
+    } else {
+      const panelWidth = 300;
+      const panelHeight = 400;
+      const isMobile = window.innerWidth <= 768;
+      const left = Math.max(10, (window.innerWidth - panelWidth) / 2);
+      const top = Math.max(10, (window.innerHeight - panelHeight) / 2);
+      colorPanel.style.top = `${top}px`;
+      colorPanel.style.left = `${left}px`;
+      colorPanel.style.display = 'block';
+    }
   });
 
-  colorCancelBtn.addEventListener('click', () => {
-    toggleModal('cip-color-settings-panel', false);
+  colorCancelBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    colorPanel.style.display = 'none';
     loadDefaultColors();
   });
 
-  colorSaveBtn.addEventListener('click', () => {
-    saveColorPreset();
-    toggleModal('cip-color-settings-panel', false);
-  });
-
-  // 新增：防止配色名称输入框点击触发关闭
-  colorPresetNameInput.addEventListener('click', e => {
+  colorSaveBtn.addEventListener('click', e => {
     e.stopPropagation();
+    saveColorPreset();
+    colorPanel.style.display = 'none';
   });
 
-  // 新增：防止颜色选择器和下拉框点击触发关闭
-  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorTabsBgInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput, colorPresetsSelect].forEach(input => {
-    input.addEventListener('click', e => e.stopPropagation());
+  // 修复手机端点击配色名称输入框关闭面板的问题
+  colorPresetNameInput.addEventListener('click', e => e.stopPropagation());
+  colorPresetNameInput.addEventListener('focus', e => e.stopPropagation());
+
+  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorTabsBgInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput].forEach(input => {
     input.addEventListener('input', applyColors);
+    input.addEventListener('click', e => e.stopPropagation()); // 防止点击颜色选择器关闭面板
+  });
+
+  colorPresetsSelect.addEventListener('change', e => {
+    e.stopPropagation();
+    loadColorPreset(e.target.value);
   });
 
   emojiPicker.addEventListener('emoji-click', event => {
@@ -709,11 +723,11 @@
       emojiPicker.style.display = 'none';
     }
     if (
-      !colorPanel.classList.contains('hidden') &&
+      colorPanel.style.display === 'block' &&
       !colorPanel.contains(e.target) &&
       !colorSettingsButton.contains(e.target)
     ) {
-      toggleModal('cip-color-settings-panel', false);
+      colorPanel.style.display = 'none';
     }
   });
 
@@ -780,9 +794,9 @@
           emojiPicker.style.display = 'none';
         }, 100);
       }
-      if (!colorPanel.classList.contains('hidden')) {
+      if (colorPanel.style.display === 'block') {
         setTimeout(() => {
-          toggleModal('cip-color-settings-panel', false);
+          colorPanel.style.display = 'none';
         }, 100);
       }
     });
