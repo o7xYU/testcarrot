@@ -1,4 +1,4 @@
-/* style.css (v1.9 - 添加功能按钮背景颜色设置，优化手机端颜色选择器) */
+/* style.css (v2.0 - 优化电脑端颜色面板居中，修复手机端输入框问题) */
 :root {
   --cip-panel-bg-color: rgba(255, 255, 255, 0.25);
   --cip-border-color: rgba(255, 255, 255, 0.4);
@@ -12,7 +12,6 @@
   --cip-title-color: #333;
   --cip-insert-text-color: #ffffff;
   --cip-insert-hover-bg-color: #e56a40;
-  /* 新增：功能按钮背景颜色 */
   --cip-tabs-bg-color: #ffffff;
 }
 
@@ -97,7 +96,7 @@
   display: flex;
   padding: 8px;
   border-bottom: 1px solid var(--cip-border-color);
-  background: var(--cip-tabs-bg-color); /* 修改：使用自定义背景颜色 */
+  background: var(--cip-tabs-bg-color);
 }
 
 .cip-tab-button {
@@ -200,7 +199,8 @@
 }
 
 #cip-voice-duration,
-#cip-new-category-name {
+#cip-new-category-name,
+#cip-color-preset-name {
   width: calc(100% - 20px);
   padding: 10px;
   border: none;
@@ -347,8 +347,8 @@ emoji-picker,
 }
 
 .cip-modal-backdrop {
-  position: absolute;
-  top: auto;
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
   height: 100%;
@@ -380,7 +380,7 @@ emoji-picker,
   box-sizing: border-box;
 }
 
-/* 新增：颜色设置面板样式 */
+/* 颜色设置面板样式 */
 #cip-color-settings-panel {
   background: var(--cip-panel-bg-color);
   backdrop-filter: blur(15px);
@@ -445,7 +445,7 @@ emoji-picker,
   color: var(--cip-insert-text-color);
 }
 
-/* 新增：移动设备优化 */
+/* 移动设备优化 */
 @media (max-width: 768px) {
   .cip-modal-content {
     width: calc(100vw - 40px);
@@ -465,21 +465,21 @@ emoji-picker,
   }
 
   .cip-color-option label {
-    font-size: 14px; /* 与电脑端一致 */
+    font-size: 14px;
   }
 
   .cip-color-option input[type="color"] {
-    width: 40px; /* 与电脑端一致 */
-    height: 40px; /* 与电脑端一致 */
+    width: 40px;
+    height: 40px;
   }
 
   .cip-color-actions button {
-    padding: 8px 16px; /* 与电脑端一致 */
-    font-size: 14px; /* 与电脑端一致 */
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
-/* 新增：极小屏幕设备优化 */
+/* 极小屏幕设备优化 */
 @media (max-width: 480px) {
   .cip-modal-content {
     width: calc(100vw - 20px);
@@ -520,7 +520,8 @@ emoji-picker,
   }
 
   #cip-voice-duration,
-  #cip-new-category-name {
+  #cip-new-category-name,
+  #cip-color-preset-name {
     font-size: 16px;
   }
 
@@ -543,17 +544,17 @@ emoji-picker,
   }
 
   .cip-color-option label {
-    font-size: 14px; /* 与电脑端一致 */
+    font-size: 14px;
   }
 
   .cip-color-option input[type="color"] {
-    width: 40px; /* 与电脑端一致 */
-    height: 40px; /* 与电脑端一致 */
+    width: 40px;
+    height: 40px;
   }
 
   .cip-color-actions button {
-    padding: 8px 16px; /* 与电脑端一致 */
-    font-size: 14px; /* 与电脑端一致 */
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
