@@ -1,4 +1,4 @@
-// script.js (v2.2 - 添加功能按钮背景颜色，优化手机端颜色选择，修复配色名称输入)
+// script.js (v2.2 - 添加功能按钮背景颜色设置，修复手机端输入配色名称问题)
 (function () {
   if (document.getElementById('cip-carrot-button')) return;
 
@@ -8,7 +8,7 @@
   pickerScript.src = 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
   document.head.appendChild(pickerScript);
 
-  // --- 1. 创建所有UI元素 (已修改，添加颜色选择模态框) ---
+  // --- 1. 创建所有UI元素 (已修改，添加功能按钮背景颜色设置) ---
   function createUI() {
     const create = (tag, id, className, html) => {
       const el = document.createElement(tag);
@@ -91,47 +91,47 @@
             <h3>自定义颜色</h3>
             <div class="cip-color-option">
                 <label>面板背景颜色</label>
-                <input type="text" id="cip-color-panel-bg" value="#ffffff">
+                <input type="color" id="cip-color-panel-bg" value="#ffffff">
             </div>
             <div class="cip-color-option">
                 <label>边框颜色</label>
-                <input type="text" id="cip-color-border" value="#ffffff">
+                <input type="color" id="cip-color-border" value="#ffffff">
             </div>
             <div class="cip-color-option">
                 <label>功能栏字体颜色</label>
-                <input type="text" id="cip-color-text" value="#333333">
+                <input type="color" id="cip-color-text" value="#333333">
             </div>
             <div class="cip-color-option">
                 <label>功能标题颜色</label>
-                <input type="text" id="cip-color-title" value="#333333">
-            </div>
-            <div class="cip-color-option">
-                <label>高亮/按钮颜色</label>
-                <input type="text" id="cip-color-accent" value="#ff7f50">
-            </div>
-            <div class="cip-color-option">
-                <label>高亮背景颜色</label>
-                <input type="text" id="cip-color-active-bg" value="#ff7f50">
-            </div>
-            <div class="cip-color-option">
-                <label>输入框背景颜色</label>
-                <input type="text" id="cip-color-input-bg" value="#ffffff">
-            </div>
-            <div class="cip-color-option">
-                <label>删除按钮颜色</label>
-                <input type="text" id="cip-color-delete" value="#e74c3c">
-            </div>
-            <div class="cip-color-option">
-                <label>插入按钮字体颜色</label>
-                <input type="text" id="cip-color-insert-text" value="#ffffff">
-            </div>
-            <div class="cip-color-option">
-                <label>插入按钮Hover颜色</label>
-                <input type="text" id="cip-color-insert-hover-bg" value="#e56a40">
+                <input type="color" id="cip-color-title" value="#333333">
             </div>
             <div class="cip-color-option">
                 <label>功能按钮背景颜色</label>
-                <input type="text" id="cip-color-tabs-bg" value="#ffffff">
+                <input type="color" id="cip-color-tabs-bg" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>高亮/按钮颜色</label>
+                <input type="color" id="cip-color-accent" value="#ff7f50">
+            </div>
+            <div class="cip-color-option">
+                <label>高亮背景颜色</label>
+                <input type="color" id="cip-color-active-bg" value="#ff7f50">
+            </div>
+            <div class="cip-color-option">
+                <label>输入框背景颜色</label>
+                <input type="color" id="cip-color-input-bg" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>删除按钮颜色</label>
+                <input type="color" id="cip-color-delete" value="#e74c3c">
+            </div>
+            <div class="cip-color-option">
+                <label>插入按钮字体颜色</label>
+                <input type="color" id="cip-color-insert-text" value="#ffffff">
+            </div>
+            <div class="cip-color-option">
+                <label>插入按钮Hover颜色</label>
+                <input type="color" id="cip-color-insert-hover-bg" value="#e56a40">
             </div>
             <div class="cip-color-option">
                 <label>保存配色方案</label>
@@ -146,26 +146,11 @@
             </div>
         `,
     );
-    const colorPickerModal = create(
-      'div',
-      'cip-color-picker-modal',
-      'cip-frosted-glass hidden',
-      `
-            <div class="cip-color-picker-content">
-                <h3>输入颜色代码</h3>
-                <input type="text" id="cip-color-picker-input" placeholder="#D4B483">
-                <div class="cip-modal-actions">
-                    <button id="cip-color-picker-cancel">取消</button>
-                    <button id="cip-color-picker-save">保存</button>
-                </div>
-            </div>
-        `,
-    );
-    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel, colorPickerModal };
+    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel };
   }
 
   // --- 2. 注入UI到页面中 ---
-  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel, colorPickerModal } = createUI();
+  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel } = createUI();
   const anchor = document.querySelector('#chat-buttons-container, #send_form');
   if (anchor) {
     document.body.appendChild(carrotButton);
@@ -174,13 +159,12 @@
     document.body.appendChild(addCategoryModal);
     document.body.appendChild(addStickersModal);
     document.body.appendChild(colorSettingsPanel);
-    document.body.appendChild(colorPickerModal);
   } else {
     console.error('胡萝卜输入面板：未能找到SillyTavern的UI挂载点，插件无法加载。');
     return;
   }
 
-  // --- 3. 获取所有元素的引用 (已修改，添加颜色选择模态框相关引用) ---
+  // --- 3. 获取所有元素的引用 (已修改，添加功能按钮背景颜色引用) ---
   const get = id => document.getElementById(id);
   const queryAll = sel => document.querySelectorAll(sel);
   const formatDisplay = get('cip-format-display'),
@@ -207,29 +191,24 @@
     colorBorderInput = get('cip-color-border'),
     colorTextInput = get('cip-color-text'),
     colorTitleInput = get('cip-color-title'),
+    colorTabsBgInput = get('cip-color-tabs-bg'), // 新增
     colorAccentInput = get('cip-color-accent'),
     colorActiveBgInput = get('cip-color-active-bg'),
     colorInputBgInput = get('cip-color-input-bg'),
     colorDeleteInput = get('cip-color-delete'),
     colorInsertTextInput = get('cip-color-insert-text'),
     colorInsertHoverBgInput = get('cip-color-insert-hover-bg'),
-    colorTabsBgInput = get('cip-color-tabs-bg'),
     colorPresetNameInput = get('cip-color-preset-name'),
     colorPresetsSelect = get('cip-color-presets'),
     colorCancelBtn = get('cip-color-cancel-btn'),
     colorSaveBtn = get('cip-color-save-btn');
-  const colorPickerModalEl = get('cip-color-picker-modal'),
-    colorPickerInput = get('cip-color-picker-input'),
-    colorPickerCancel = get('cip-color-picker-cancel'),
-    colorPickerSave = get('cip-color-picker-save');
 
-  // --- 4. 核心逻辑与事件监听 (已修改，添加颜色选择模态框逻辑) ---
+  // --- 4. 核心逻辑与事件监听 (已修改，添加功能按钮背景颜色逻辑) ---
   let currentTab = 'text',
     currentTextSubType = 'plain',
     stickerData = {},
     currentStickerCategory = '',
-    selectedSticker = null,
-    currentColorInput = null;
+    selectedSticker = null;
   let colorPresets = {};
   const formatTemplates = {
     text: {
@@ -251,13 +230,13 @@
     border: '#ffffff',
     text: '#333333',
     title: '#333333',
+    tabsBg: '#ffffff', // 新增
     accent: '#ff7f50',
     activeBg: '#ff7f50',
     inputBg: '#ffffff',
     delete: '#e74c3c',
     insertText: '#ffffff',
     insertHoverBg: '#e56a40',
-    tabsBg: '#ffffff',
   };
 
   function updateFormatDisplay() {
@@ -435,13 +414,13 @@
       border: colorBorderInput.value,
       text: colorTextInput.value,
       title: colorTitleInput.value,
+      tabsBg: colorTabsBgInput.value, // 新增
       accent: colorAccentInput.value,
       activeBg: colorActiveBgInput.value,
       inputBg: colorInputBgInput.value,
       delete: colorDeleteInput.value,
       insertText: colorInsertTextInput.value,
       insertHoverBg: colorInsertHoverBgInput.value,
-      tabsBg: colorTabsBgInput.value,
     };
     localStorage.setItem('cip_color_presets', JSON.stringify(colorPresets));
     renderColorPresets();
@@ -456,13 +435,13 @@
     colorBorderInput.value = preset.border;
     colorTextInput.value = preset.text;
     colorTitleInput.value = preset.title;
+    colorTabsBgInput.value = preset.tabsBg; // 新增
     colorAccentInput.value = preset.accent;
     colorActiveBgInput.value = preset.activeBg;
     colorInputBgInput.value = preset.inputBg;
     colorDeleteInput.value = preset.delete;
     colorInsertTextInput.value = preset.insertText;
     colorInsertHoverBgInput.value = preset.insertHoverBg;
-    colorTabsBgInput.value = preset.tabsBg;
     applyColors();
   }
 
@@ -482,13 +461,13 @@
     root.style.setProperty('--cip-border-color', `rgba(${hexToRgb(colorBorderInput.value)}, 0.4)`);
     root.style.setProperty('--cip-text-color', colorTextInput.value);
     root.style.setProperty('--cip-title-color', colorTitleInput.value);
+    root.style.setProperty('--cip-tabs-bg-color', colorTabsBgInput.value); // 新增
     root.style.setProperty('--cip-accent-color', colorAccentInput.value);
     root.style.setProperty('--cip-active-bg-color', `rgba(${hexToRgb(colorActiveBgInput.value)}, 0.3)`);
     root.style.setProperty('--cip-input-bg-color', `rgba(${hexToRgb(colorInputBgInput.value)}, 0.5)`);
     root.style.setProperty('--cip-delete-color', colorDeleteInput.value);
     root.style.setProperty('--cip-insert-text-color', colorInsertTextInput.value);
     root.style.setProperty('--cip-insert-hover-bg-color', colorInsertHoverBgInput.value);
-    root.style.setProperty('--cip-tabs-bg-color', colorTabsBgInput.value);
   }
 
   function hexToRgb(hex) {
@@ -503,13 +482,13 @@
     colorBorderInput.value = defaultColors.border;
     colorTextInput.value = defaultColors.text;
     colorTitleInput.value = defaultColors.title;
+    colorTabsBgInput.value = defaultColors.tabsBg; // 新增
     colorAccentInput.value = defaultColors.accent;
     colorActiveBgInput.value = defaultColors.activeBg;
     colorInputBgInput.value = defaultColors.inputBg;
     colorDeleteInput.value = defaultColors.delete;
     colorInsertTextInput.value = defaultColors.insertText;
     colorInsertHoverBgInput.value = defaultColors.insertHoverBg;
-    colorTabsBgInput.value = defaultColors.tabsBg;
     applyColors();
   }
 
@@ -519,28 +498,6 @@
       colorPresets = JSON.parse(saved);
       renderColorPresets();
     }
-  }
-
-  function openColorPicker(input) {
-    currentColorInput = input;
-    colorPickerInput.value = input.value;
-    const btnRect = input.getBoundingClientRect();
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-      const modalWidth = 300;
-      const modalHeight = 200;
-      const left = Math.max(10, (window.innerWidth - modalWidth) / 2);
-      const top = Math.max(10, (window.innerHeight - modalHeight) / 2);
-      colorPickerModalEl.style.top = `${top}px`;
-      colorPickerModalEl.style.left = `${left}px`;
-    } else {
-      let top = btnRect.top - 200 - 10;
-      if (top < 10) top = btnRect.bottom + 10;
-      colorPickerModalEl.style.top = `${top}px`;
-      colorPickerModalEl.style.left = `${btnRect.left}px`;
-    }
-    colorPickerModalEl.style.display = 'block';
-    colorPickerInput.focus();
   }
 
   colorSettingsButton.addEventListener('click', e => {
@@ -578,33 +535,8 @@
     colorPanel.style.display = 'none';
   });
 
-  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput, colorTabsBgInput].forEach(input => {
-    input.addEventListener('click', e => {
-      e.stopPropagation();
-      openColorPicker(input);
-    });
-    input.addEventListener('input', e => {
-      if (/^#[0-9A-Fa-f]{6}$/.test(input.value)) {
-        applyColors();
-      }
-    });
-  });
-
-  colorPickerCancel.addEventListener('click', () => {
-    colorPickerModalEl.style.display = 'none';
-    currentColorInput = null;
-  });
-
-  colorPickerSave.addEventListener('click', () => {
-    const value = colorPickerInput.value.trim();
-    if (/^#[0-9A-Fa-f]{6}$/.test(value) && currentColorInput) {
-      currentColorInput.value = value;
-      applyColors();
-      colorPickerModalEl.style.display = 'none';
-      currentColorInput = null;
-    } else {
-      alert('请输入有效的颜色代码（如 #D4B483）！');
-    }
+  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorTabsBgInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput].forEach(input => {
+    input.addEventListener('input', applyColors);
   });
 
   colorPresetsSelect.addEventListener('change', e => {
@@ -794,17 +726,9 @@
       colorPanel.style.display === 'block' &&
       !colorPanel.contains(e.target) &&
       !colorSettingsButton.contains(e.target) &&
-      !colorPickerModalEl.contains(e.target)
+      !colorPresetNameInput.contains(e.target) // 新增：防止点击配色名称输入框关闭面板
     ) {
       colorPanel.style.display = 'none';
-    }
-    if (
-      colorPickerModalEl.style.display === 'block' &&
-      !colorPickerModalEl.contains(e.target) &&
-      !colorPanel.contains(e.target)
-    ) {
-      colorPickerModalEl.style.display = 'none';
-      currentColorInput = null;
     }
   });
 
@@ -874,12 +798,6 @@
       if (colorPanel.style.display === 'block') {
         setTimeout(() => {
           colorPanel.style.display = 'none';
-        }, 100);
-      }
-      if (colorPickerModalEl.style.display === 'block') {
-        setTimeout(() => {
-          colorPickerModalEl.style.display = 'none';
-          currentColorInput = null;
         }, 100);
       }
     });
