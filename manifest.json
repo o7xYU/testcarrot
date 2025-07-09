@@ -1,10 +1,9 @@
 {
-  "name": "胡萝卜输入助手",
-  "display_name": "胡萝卜输入助手",
-  "author": "你的名字 (由AI重构)",
-  "version": "1.0.0",
-  "description": "一个提供快捷输入特定格式消息（包括文字、语音、表情包等）的UI插件。",
+  "name": "carrot-input-panel",
+  "display_name": "水不水灵",
+  "version": "2.4",
   "manifest_version": 2,
+  "description": "一个提供主题定制和多种格式化输入选项的浮动面板。由BunnY制作，bunnyhole lab专供。",
   "js": ["script.js"],
   "css": ["style.css"]
 }
