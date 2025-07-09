@@ -382,6 +382,8 @@ emoji-picker,
 
 /* 颜色设置面板样式 */
 #cip-color-settings-panel {
+  position: flex;
+  top: 15px;
   background: var(--cip-panel-bg-color);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
