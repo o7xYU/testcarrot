@@ -1,4 +1,4 @@
-/* style.css (v1.9 - 添加功能按钮背景颜色设置，优化手机端颜色选择器) */
+/* style.css (v2.0 - 调整颜色设置面板为模态窗口，统一手机端和电脑端选色模式) */
 :root {
   --cip-panel-bg-color: rgba(255, 255, 255, 0.25);
   --cip-border-color: rgba(255, 255, 255, 0.4);
@@ -12,13 +12,11 @@
   --cip-title-color: #333;
   --cip-insert-text-color: #ffffff;
   --cip-insert-hover-bg-color: #e56a40;
-  /* 新增：功能按钮背景颜色 */
   --cip-tabs-bg-color: #ffffff;
 }
 
 /* 移动设备触摸优化 */
 @media (max-width: 768px) {
-  /* 防止意外缩放和改善触摸体验 */
   .cip-frosted-glass {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -26,7 +24,6 @@
     user-select: none;
   }
 
-  /* 改善按钮触摸反馈 */
   .cip-tab-button,
   .cip-sub-option-btn,
   #cip-recall-button,
@@ -97,7 +94,7 @@
   display: flex;
   padding: 8px;
   border-bottom: 1px solid var(--cip-border-color);
-  background: var(--cip-tabs-bg-color); /* 修改：使用自定义背景颜色 */
+  background: var(--cip-tabs-bg-color);
 }
 
 .cip-tab-button {
@@ -200,7 +197,8 @@
 }
 
 #cip-voice-duration,
-#cip-new-category-name {
+#cip-new-category-name,
+#cip-color-preset-name {
   width: calc(100% - 20px);
   padding: 10px;
   border: none;
@@ -264,13 +262,53 @@
   background-color: var(--cip-insert-hover-bg-color);
 }
 
-emoji-picker,
-#cip-color-settings-panel {
+emoji-picker {
   position: fixed;
   z-index: 1002;
   display: none;
   max-width: calc(100vw - 20px);
   max-height: calc(100vh - 20px);
+}
+
+/* 修改：颜色设置面板为模态窗口，样式与cip-modal-content一致 */
+#cip-color-settings-panel {
+  position: absolute;
+  top: auto;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1003;
+  opacity: 1;
+  transition: opacity var(--cip-transition-speed);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#cip-color-settings-panel.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#cip-color-settings-panel .cip-color-settings-content {
+  background: var(--cip-panel-bg-color);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: var(--cip-border-radius);
+  border: 1px solid var(--cip-border-color);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 320px;
+  max-width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 /* 移动设备下的emoji picker和颜色设置面板优化 */
@@ -281,6 +319,13 @@ emoji-picker,
     height: auto !important;
     max-width: 320px;
     max-height: calc(100vh - 40px);
+  }
+
+  #cip-color-settings-panel .cip-color-settings-content {
+    width: calc(100vw - 40px);
+    max-width: 340px;
+    margin: 0;
+    padding: 16px;
   }
 }
 
@@ -380,18 +425,6 @@ emoji-picker,
   box-sizing: border-box;
 }
 
-/* 新增：颜色设置面板样式 */
-#cip-color-settings-panel {
-  background: var(--cip-panel-bg-color);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: var(--cip-border-radius);
-  border: 1px solid var(--cip-border-color);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  width: 300px;
-}
-
 .cip-color-option {
   display: flex;
   align-items: center;
@@ -445,7 +478,7 @@ emoji-picker,
   color: var(--cip-insert-text-color);
 }
 
-/* 新增：移动设备优化 */
+/* 移动设备优化 */
 @media (max-width: 768px) {
   .cip-modal-content {
     width: calc(100vw - 40px);
@@ -458,30 +491,25 @@ emoji-picker,
     padding: 10px;
   }
 
-  #cip-color-settings-panel {
-    width: calc(100vw - 40px);
-    max-width: 320px;
-    padding: 12px;
-  }
-
   .cip-color-option label {
-    font-size: 14px; /* 与电脑端一致 */
+    font-size: 14px;
   }
 
   .cip-color-option input[type="color"] {
-    width: 40px; /* 与电脑端一致 */
-    height: 40px; /* 与电脑端一致 */
+    width: 40px;
+    height: 40px;
   }
 
   .cip-color-actions button {
-    padding: 8px 16px; /* 与电脑端一致 */
-    font-size: 14px; /* 与电脑端一致 */
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
-/* 新增：极小屏幕设备优化 */
+/* 极小屏幕设备优化 */
 @media (max-width: 480px) {
-  .cip-modal-content {
+  .cip-modal-content,
+  #cip-color-settings-panel .cip-color-settings-content {
     width: calc(100vw - 20px);
     padding: 12px;
     gap: 12px;
@@ -520,7 +548,8 @@ emoji-picker,
   }
 
   #cip-voice-duration,
-  #cip-new-category-name {
+  #cip-new-category-name,
+  #cip-color-preset-name {
     font-size: 16px;
   }
 
@@ -537,23 +566,18 @@ emoji-picker,
     min-height: 44px;
   }
 
-  #cip-color-settings-panel {
-    width: calc(100vw - 20px);
-    padding: 10px;
-  }
-
   .cip-color-option label {
-    font-size: 14px; /* 与电脑端一致 */
+    font-size: 14px;
   }
 
   .cip-color-option input[type="color"] {
-    width: 40px; /* 与电脑端一致 */
-    height: 40px; /* 与电脑端一致 */
+    width: 40px;
+    height: 40px;
   }
 
   .cip-color-actions button {
-    padding: 8px 16px; /* 与电脑端一致 */
-    font-size: 14px; /* 与电脑端一致 */
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
