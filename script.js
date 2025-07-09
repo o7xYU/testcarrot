@@ -1,4 +1,4 @@
-// script.js (v2.4 - 修复点击配色名称输入框导致主面板和颜色面板关闭的问题)
+// script.js (v2.1 - 主题颜色设置 & 优化)
 (function () {
   if (document.getElementById('cip-carrot-button')) return;
 
@@ -8,7 +8,7 @@
   pickerScript.src = 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
   document.head.appendChild(pickerScript);
 
-  // --- 1. 创建所有UI元素 ---
+  // --- 1. 创建所有UI元素 (已修改) ---
   function createUI() {
     const create = (tag, id, className, html) => {
       const el = document.createElement(tag);
@@ -33,34 +33,15 @@
             </nav>
             <div id="cip-format-display"></div>
             <div id="cip-panel-content">
-                <div id="cip-text-content" class="cip-content-section">
-                    <div class="cip-sub-options-container">
-                        <button class="cip-sub-option-btn active" data-type="plain">纯文本</button>
-                        <button class="cip-sub-option-btn" data-type="image">图片</button>
-                        <button class="cip-sub-option-btn" data-type="video">视频</button>
-                        <button class="cip-sub-option-btn" data-type="music">音乐</button>
-                        <button class="cip-sub-option-btn" data-type="post">帖子</button>
-                    </div>
-                    <textarea id="cip-main-input" placeholder="在此输入文字..."></textarea>
-                </div>
-                <div id="cip-voice-content" class="cip-content-section">
-                    <input type="number" id="cip-voice-duration" placeholder="输入时长 (秒, 仅数字)">
-                    <textarea id="cip-voice-message" placeholder="输入语音识别出的内容..."></textarea>
-                </div>
-                <div id="cip-bunny-content" class="cip-content-section">
-                    <textarea id="cip-bunny-input" placeholder="在此输入想对BUNNY说的话..."></textarea>
-                </div>
-                <div id="cip-stickers-content" class="cip-content-section">
-                    <div id="cip-sticker-categories" class="cip-sub-options-container">
-                        <button id="cip-add-category-btn" class="cip-sub-option-btn">+</button>
-                    </div>
-                    <div id="cip-sticker-grid"></div>
-                </div>
+                <div id="cip-text-content" class="cip-content-section"><div class="cip-sub-options-container"><button class="cip-sub-option-btn active" data-type="plain">纯文本</button><button class="cip-sub-option-btn" data-type="image">图片</button><button class="cip-sub-option-btn" data-type="video">视频</button><button class="cip-sub-option-btn" data-type="music">音乐</button><button class="cip-sub-option-btn" data-type="post">帖子</button></div><textarea id="cip-main-input" placeholder="在此输入文字..."></textarea></div>
+                <div id="cip-voice-content" class="cip-content-section"><input type="number" id="cip-voice-duration" placeholder="输入时长 (秒, 仅数字)"><textarea id="cip-voice-message" placeholder="输入语音识别出的内容..."></textarea></div>
+                <div id="cip-bunny-content" class="cip-content-section"><textarea id="cip-bunny-input" placeholder="在此输入想对BUNNY说的话..."></textarea></div>
+                <div id="cip-stickers-content" class="cip-content-section"><div id="cip-sticker-categories" class="cip-sub-options-container"><button id="cip-add-category-btn" class="cip-sub-option-btn">+</button></div><div id="cip-sticker-grid"></div></div>
             </div>
             <div id="cip-panel-footer">
-                <div style="display: flex; gap: 8px;">
-                    <div id="cip-emoji-picker-btn">😊</div>
-                    <div id="cip-color-settings-button">👕</div>
+                <div id="cip-footer-controls">
+                    <div id="cip-emoji-picker-btn" title="Emoji">😊</div>
+                    <div id="cip-theme-button" title="主题设置">👕</div>
                 </div>
                 <div class="cip-footer-actions">
                     <button id="cip-recall-button">撤回</button>
@@ -83,74 +64,54 @@
       'cip-modal-backdrop hidden',
       `<div class="cip-modal-content cip-frosted-glass"><h3 id="cip-add-sticker-title"></h3><p>每行一个，格式为：<br><code>表情包描述:图片链接</code></p><textarea id="cip-new-stickers-input" placeholder="可爱猫猫:https://example.com/cat.png\n狗狗点头:https://example.com/dog.gif"></textarea><div class="cip-modal-actions"><button id="cip-cancel-stickers-btn">取消</button><button id="cip-save-stickers-btn">保存</button></div></div>`,
     );
-    const colorSettingsPanel = create(
-      'div',
-      'cip-color-settings-panel',
-      'cip-frosted-glass',
-      `
-            <h3>自定义颜色</h3>
-            <div class="cip-color-option">
-                <label>面板背景颜色</label>
-                <input type="color" id="cip-color-panel-bg" value="#ffffff">
+    // --- 新增：主题设置面板 ---
+    const themePanel = create(
+        'div',
+        'cip-theme-settings-panel',
+        'cip-frosted-glass hidden', // 默认隐藏
+        `
+            <h3>主题与颜色设置</h3>
+            <div class="cip-theme-options-grid">
+                <label for="cip-color-accent">主要/高亮颜色:</label>
+                <input type="text" id="cip-color-accent" data-var="--cip-accent-color">
+
+                <label for="cip-color-accent-hover">高亮悬浮颜色:</label>
+                <input type="text" id="cip-color-accent-hover" data-var="--cip-accent-hover-color">
+
+                <label for="cip-color-insert-text">插入按钮文字:</label>
+                <input type="text" id="cip-color-insert-text" data-var="--cip-insert-text-color">
+
+                <label for="cip-color-panel-bg">面板背景:</label>
+                <input type="text" id="cip-color-panel-bg" data-var="--cip-panel-bg-color">
+
+                <label for="cip-color-tabs-bg">功能栏背景:</label>
+                <input type="text" id="cip-color-tabs-bg" data-var="--cip-tabs-bg-color">
+
+                <label for="cip-color-text">功能栏字体:</label>
+                <input type="text" id="cip-color-text" data-var="--cip-text-color">
+
+                <label for="cip-color-input-bg">输入框背景:</label>
+                <input type="text" id="cip-color-input-bg" data-var="--cip-input-bg-color">
             </div>
-            <div class="cip-color-option">
-                <label>边框颜色</label>
-                <input type="color" id="cip-color-border" value="#ffffff">
+            <div class="cip-theme-manager">
+                <div class="cip-theme-actions">
+                    <select id="cip-theme-select"></select>
+                    <button id="cip-delete-theme-btn" class="cip-delete-btn">删除</button>
+                </div>
+                <div class="cip-theme-save-new">
+                    <input type="text" id="cip-new-theme-name" placeholder="输入新配色方案名称...">
+                    <button id="cip-save-theme-btn" class="cip-save-btn">保存</button>
+                </div>
             </div>
-            <div class="cip-color-option">
-                <label>功能栏字体颜色</label>
-                <input type="color" id="cip-color-text" value="#333333">
-            </div>
-            <div class="cip-color-option">
-                <label>功能标题颜色</label>
-                <input type="color" id="cip-color-title" value="#333333">
-            </div>
-            <div class="cip-color-option">
-                <label>功能按钮背景颜色</label>
-                <input type="color" id="cip-color-tabs-bg" value="#ffffff">
-            </div>
-            <div class="cip-color-option">
-                <label>高亮/按钮颜色</label>
-                <input type="color" id="cip-color-accent" value="#ff7f50">
-            </div>
-            <div class="cip-color-option">
-                <label>高亮背景颜色</label>
-                <input type="color" id="cip-color-active-bg" value="#ff7f50">
-            </div>
-            <div class="cip-color-option">
-                <label>输入框背景颜色</label>
-                <input type="color" id="cip-color-input-bg" value="#ffffff">
-            </div>
-            <div class="cip-color-option">
-                <label>删除按钮颜色</label>
-                <input type="color" id="cip-color-delete" value="#e74c3c">
-            </div>
-            <div class="cip-color-option">
-                <label>插入按钮字体颜色</label>
-                <input type="color" id="cip-color-insert-text" value="#ffffff">
-            </div>
-            <div class="cip-color-option">
-                <label>插入按钮Hover颜色</label>
-                <input type="color" id="cip-color-insert-hover-bg" value="#e56a40">
-            </div>
-            <div class="cip-color-option">
-                <label>保存配色方案</label>
-                <input type="text" id="cip-color-preset-name" placeholder="输入配色名称">
-            </div>
-            <select id="cip-color-presets">
-                <option value="">选择已有配色方案</option>
-            </select>
-            <div class="cip-color-actions">
-                <button id="cip-color-cancel-btn">取消</button>
-                <button id="cip-color-save-btn">保存</button>
-            </div>
-        `,
+            <button id="cip-close-theme-panel-btn">完成</button>
+        `
     );
-    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel };
+
+    return { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, themePanel };
   }
 
-  // --- 2. 注入UI到页面中 ---
-  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, colorSettingsPanel } = createUI();
+  // --- 2. 注入UI到页面中 (已修改) ---
+  const { carrotButton, inputPanel, emojiPicker, addCategoryModal, addStickersModal, themePanel } = createUI();
   const anchor = document.querySelector('#chat-buttons-container, #send_form');
   if (anchor) {
     document.body.appendChild(carrotButton);
@@ -158,27 +119,27 @@
     document.body.appendChild(emojiPicker);
     document.body.appendChild(addCategoryModal);
     document.body.appendChild(addStickersModal);
-    document.body.appendChild(colorSettingsPanel);
+    document.body.appendChild(themePanel); // 注入主题面板
   } else {
     console.error('胡萝卜输入面板：未能找到SillyTavern的UI挂载点，插件无法加载。');
     return;
   }
 
-  // --- 3. 获取所有元素的引用 ---
+  // --- 3. 获取所有元素的引用 (已修改) ---
   const get = id => document.getElementById(id);
   const queryAll = sel => document.querySelectorAll(sel);
+  // ... (原有元素引用保持不变)
   const formatDisplay = get('cip-format-display'),
     insertButton = get('cip-insert-button'),
     recallButton = get('cip-recall-button');
   const mainInput = get('cip-main-input'),
     voiceDurationInput = get('cip-voice-duration'),
-    voiceMessageInput = get('cip-voice-message'),
-    bunnyInput = get('cip-bunny-input');
+    voiceMessageInput = get('cip-voice-message');
+  const bunnyInput = get('cip-bunny-input');
   const stickerCategoriesContainer = get('cip-sticker-categories'),
     addCategoryBtn = get('cip-add-category-btn'),
     stickerGrid = get('cip-sticker-grid');
-  const emojiPickerBtn = get('cip-emoji-picker-btn'),
-    colorSettingsButton = get('cip-color-settings-button');
+  const emojiPickerBtn = get('cip-emoji-picker-btn');
   const saveCategoryBtn = get('cip-save-category-btn'),
     cancelCategoryBtn = get('cip-cancel-category-btn'),
     newCategoryNameInput = get('cip-new-category-name');
@@ -186,30 +147,23 @@
     saveStickersBtn = get('cip-save-stickers-btn'),
     cancelStickersBtn = get('cip-cancel-stickers-btn'),
     newStickersInput = get('cip-new-stickers-input');
-  const colorPanel = get('cip-color-settings-panel'),
-    colorPanelBgInput = get('cip-color-panel-bg'),
-    colorBorderInput = get('cip-color-border'),
-    colorTextInput = get('cip-color-text'),
-    colorTitleInput = get('cip-color-title'),
-    colorTabsBgInput = get('cip-color-tabs-bg'),
-    colorAccentInput = get('cip-color-accent'),
-    colorActiveBgInput = get('cip-color-active-bg'),
-    colorInputBgInput = get('cip-color-input-bg'),
-    colorDeleteInput = get('cip-color-delete'),
-    colorInsertTextInput = get('cip-color-insert-text'),
-    colorInsertHoverBgInput = get('cip-color-insert-hover-bg'),
-    colorPresetNameInput = get('cip-color-preset-name'),
-    colorPresetsSelect = get('cip-color-presets'),
-    colorCancelBtn = get('cip-color-cancel-btn'),
-    colorSaveBtn = get('cip-color-save-btn');
+    
+  // --- 新增：主题设置相关元素引用 ---
+  const themeButton = get('cip-theme-button');
+  const closeThemePanelBtn = get('cip-close-theme-panel-btn');
+  const colorInputs = queryAll('.cip-theme-options-grid input[type="text"]');
+  const themeSelect = get('cip-theme-select');
+  const newThemeNameInput = get('cip-new-theme-name');
+  const saveThemeBtn = get('cip-save-theme-btn');
+  const deleteThemeBtn = get('cip-delete-theme-btn');
 
-  // --- 4. 核心逻辑与事件监听 ---
+
+  // --- 4. 核心逻辑与事件监听 (已修改) ---
   let currentTab = 'text',
     currentTextSubType = 'plain',
     stickerData = {},
     currentStickerCategory = '',
     selectedSticker = null;
-  let colorPresets = {};
   const formatTemplates = {
     text: {
       plain: '“{content}”',
@@ -224,22 +178,100 @@
     recall: '--',
   };
 
-  // 默认颜色配置
-  const defaultColors = {
-    panelBg: '#ffffff',
-    border: '#ffffff',
-    text: '#333333',
-    title: '#333333',
-    tabsBg: '#ffffff',
-    accent: '#ff7f50',
-    activeBg: '#ff7f50',
-    inputBg: '#ffffff',
-    delete: '#e74c3c',
-    insertText: '#ffffff',
-    insertHoverBg: '#e56a40',
+  // --- 新增：主题管理核心逻辑 ---
+  let themes = {};
+  const defaultTheme = {
+    '--cip-accent-color': '#ff7f50',
+    '--cip-accent-hover-color': '#e56a40',
+    '--cip-insert-text-color': 'white',
+    '--cip-panel-bg-color': 'rgba(255, 255, 255, 0.25)',
+    '--cip-tabs-bg-color': 'transparent',
+    '--cip-text-color': '#333333',
+    '--cip-input-bg-color': 'rgba(255, 255, 255, 0.5)',
   };
 
+  function applyTheme(theme) {
+    const themeToApply = theme || defaultTheme;
+    for (const [key, value] of Object.entries(themeToApply)) {
+      document.documentElement.style.setProperty(key, value);
+    }
+    updateColorInputs(themeToApply);
+  }
+
+  function updateColorInputs(theme) {
+    colorInputs.forEach(input => {
+      const varName = input.dataset.var;
+      input.value = theme[varName] || '';
+    });
+  }
+
+  function getColorsFromInputs() {
+    const currentColors = {};
+    colorInputs.forEach(input => {
+      currentColors[input.dataset.var] = input.value;
+    });
+    return currentColors;
+  }
+
+  function populateThemeSelect() {
+    const savedSelection = themeSelect.value;
+    themeSelect.innerHTML = '<option value="default">默认主题</option>';
+    for (const themeName in themes) {
+      const option = document.createElement('option');
+      option.value = themeName;
+      option.textContent = themeName;
+      themeSelect.appendChild(option);
+    }
+    themeSelect.value = themes[savedSelection] ? savedSelection : 'default';
+  }
+
+  function saveCurrentTheme() {
+    const name = newThemeNameInput.value.trim();
+    if (!name) {
+      alert('请输入配色方案名称！');
+      return;
+    }
+    if (name === 'default') {
+      alert('不能使用 "default" 作为名称。');
+      return;
+    }
+    themes[name] = getColorsFromInputs();
+    localStorage.setItem('cip_theme_data_v1', JSON.stringify(themes));
+    newThemeNameInput.value = '';
+    populateThemeSelect();
+    themeSelect.value = name;
+    alert('配色方案已保存！');
+  }
+
+  function deleteSelectedTheme() {
+    const selected = themeSelect.value;
+    if (selected === 'default') {
+      alert('不能删除默认主题。');
+      return;
+    }
+    if (confirm(`确定要删除 "${selected}" 这个配色方案吗？`)) {
+      delete themes[selected];
+      localStorage.setItem('cip_theme_data_v1', JSON.stringify(themes));
+      populateThemeSelect();
+      applyTheme(defaultTheme); // Revert to default
+    }
+  }
+  
+  function loadThemes() {
+     const savedThemes = localStorage.getItem('cip_theme_data_v1');
+     if (savedThemes) {
+         themes = JSON.parse(savedThemes);
+     }
+     const lastThemeName = localStorage.getItem('cip_last_active_theme_v1') || 'default';
+     populateThemeSelect();
+     const themeToApply = themes[lastThemeName] || defaultTheme;
+     applyTheme(themeToApply);
+     themeSelect.value = themes[lastThemeName] ? lastThemeName : 'default';
+  }
+
+
   function updateFormatDisplay() {
+    // ... (此函数无任何修改，保持原样)
     const e = get('cip-input-panel').querySelector(
       `.cip-sticker-category-btn[data-category="${currentStickerCategory}"]`,
     );
@@ -253,7 +285,7 @@
         break;
       case 'bunny':
         formatDisplay.textContent = '格式: (内容)';
-        break;
+        break; 
       case 'stickers':
         formatDisplay.textContent = '格式: !描述|链接!';
         if (e) {
@@ -284,272 +316,118 @@
   }
 
   function switchTab(t) {
-    currentTab = t;
-    queryAll('.cip-tab-button').forEach(e => e.classList.toggle('active', e.dataset.tab === t));
-    queryAll('.cip-content-section').forEach(e => e.classList.toggle('active', e.id === `cip-${t}-content`));
+    // ... (此函数无任何修改，保持原样)
+    (currentTab = t),
+      queryAll('.cip-tab-button').forEach(e => e.classList.toggle('active', e.dataset.tab === t)),
+      queryAll('.cip-content-section').forEach(e => e.classList.toggle('active', e.id === `cip-${t}-content`));
     const o = Object.keys(stickerData)[0];
-    if (t === 'stickers' && !currentStickerCategory && o) {
-      switchStickerCategory(o);
-    } else if (t === 'stickers') {
-      switchStickerCategory(currentStickerCategory);
-    }
-    updateFormatDisplay();
+    'stickers' === t &&
+      (!currentStickerCategory && o ? switchStickerCategory(o) : switchStickerCategory(currentStickerCategory)),
+      updateFormatDisplay();
   }
-
   function switchTextSubType(t) {
-    currentTextSubType = t;
-    queryAll('#cip-text-content .cip-sub-option-btn').forEach(e =>
-      e.classList.toggle('active', e.dataset.type === t),
-    );
-    updateFormatDisplay();
+    // ... (此函数无任何修改，保持原样)
+    (currentTextSubType = t),
+      queryAll('#cip-text-content .cip-sub-option-btn').forEach(e =>
+        e.classList.toggle('active', e.dataset.type === t),
+      ),
+      updateFormatDisplay();
   }
-
   function switchStickerCategory(t) {
-    currentStickerCategory = t;
-    queryAll('.cip-sticker-category-btn').forEach(e => e.classList.toggle('active', e.dataset.category === t));
-    renderStickers(t);
-    selectedSticker = null;
-    updateFormatDisplay();
+    // ... (此函数无任何修改，保持原样)
+    (currentStickerCategory = t),
+      queryAll('.cip-sticker-category-btn').forEach(e => e.classList.toggle('active', e.dataset.category === t)),
+      renderStickers(t),
+      (selectedSticker = null),
+      updateFormatDisplay();
   }
-
   function renderStickers(t) {
-    stickerGrid.innerHTML = '';
-    if (!t || !stickerData[t]) {
-      stickerGrid.innerHTML = '<div class="cip-sticker-placeholder">请先选择或添加一个分类...</div>';
-      return;
-    }
+    // ... (此函数无任何修改，保持原样)
+    if (((stickerGrid.innerHTML = ''), !t || !stickerData[t]))
+      return void (stickerGrid.innerHTML = '<div class="cip-sticker-placeholder">请先选择或添加一个分类...</div>');
     const o = stickerData[t];
-    if (o.length === 0) {
-      stickerGrid.innerHTML = '<div class="cip-sticker-placeholder">这个分类还没有表情包...</div>';
-      return;
-    }
+    if (0 === o.length)
+      return void (stickerGrid.innerHTML = '<div class="cip-sticker-placeholder">这个分类还没有表情包...</div>');
     o.forEach((t, o) => {
       const e = document.createElement('div');
       e.className = 'cip-sticker-wrapper';
       const i = document.createElement('img');
-      i.src = t.url;
-      i.title = t.desc;
-      i.className = 'cip-sticker-item';
-      i.onclick = () => {
-        queryAll('.cip-sticker-item.selected').forEach(e => e.classList.remove('selected'));
-        i.classList.add('selected');
-        selectedSticker = t;
-      };
+      (i.src = t.url),
+        (i.title = t.desc),
+        (i.className = 'cip-sticker-item'),
+        (i.onclick = () => {
+          queryAll('.cip-sticker-item.selected').forEach(e => e.classList.remove('selected')),
+            i.classList.add('selected'),
+            (selectedSticker = t);
+        });
       const n = document.createElement('button');
-      n.innerHTML = '×';
-      n.className = 'cip-delete-sticker-btn';
-      n.title = '删除这个表情包';
-      n.onclick = e => {
-        e.stopPropagation();
-        if (confirm(`确定删除表情「${t.desc}」?`)) {
-          stickerData[currentStickerCategory].splice(o, 1);
-          saveStickerData();
-          renderStickers(currentStickerCategory);
-        }
-      };
-      e.appendChild(i);
-      e.appendChild(n);
-      stickerGrid.appendChild(e);
+      (n.innerHTML = '&times;'),
+        (n.className = 'cip-delete-sticker-btn'),
+        (n.title = '删除这个表情包'),
+        (n.onclick = e => {
+          e.stopPropagation(),
+            confirm(`确定删除表情「${t.desc}」?`) &&
+              (stickerData[currentStickerCategory].splice(o, 1),
+              saveStickerData(),
+              renderStickers(currentStickerCategory));
+        }),
+        e.appendChild(i),
+        e.appendChild(n),
+        stickerGrid.appendChild(e);
     });
   }
-
   function renderCategories() {
-    queryAll('.cip-sticker-category-btn').forEach(e => e.remove());
-    Object.keys(stickerData).forEach(t => {
-      const o = document.createElement('button'),
-        e = document.createElement('span');
-      e.textContent = t;
-      o.appendChild(e);
-      o.className = 'cip-sub-option-btn cip-sticker-category-btn';
-      o.dataset.category = t;
-      o.onclick = () => switchStickerCategory(t);
-      stickerCategoriesContainer.appendChild(o);
-    });
+    // ... (此函数无任何修改，保持原样)
+    queryAll('.cip-sticker-category-btn').forEach(e => e.remove()),
+      Object.keys(stickerData).forEach(t => {
+        const o = document.createElement('button'),
+          e = document.createElement('span');
+        (e.textContent = t),
+          o.appendChild(e),
+          (o.className = 'cip-sub-option-btn cip-sticker-category-btn'),
+          (o.dataset.category = t),
+          (o.onclick = () => switchStickerCategory(t)),
+          stickerCategoriesContainer.appendChild(o);
+      });
   }
-
   function insertIntoSillyTavern(t) {
+    // ... (此函数无任何修改，保持原样)
     const o = document.querySelector('#send_textarea');
-    if (o) {
-      o.value += (o.value.trim() ? '\n' : '') + t;
-      o.dispatchEvent(new Event('input', { bubbles: true }));
-      o.focus();
-    } else {
-      alert('未能找到SillyTavern的输入框！');
-    }
+    o
+      ? ((o.value += (o.value.trim() ? '\n' : '') + t), o.dispatchEvent(new Event('input', { bubbles: !0 })), o.focus())
+      : alert('未能找到SillyTavern的输入框！');
   }
-
   function saveStickerData() {
+    // ... (此函数无任何修改，保持原样)
     localStorage.setItem('cip_sticker_data', JSON.stringify(stickerData));
   }
-
   function loadStickerData() {
+    // ... (此函数无任何修改，保持原样)
     const t = localStorage.getItem('cip_sticker_data');
-    if (t) stickerData = JSON.parse(t);
+    t && (stickerData = JSON.parse(t));
   }
-
   function toggleModal(t, o) {
+    // ... (此函数无任何修改，保持原样)
     get(t).classList.toggle('hidden', !o);
   }
-
   function openAddStickersModal(t) {
-    addStickerTitle.textContent = `为「${t}」分类添加表情包`;
-    newStickersInput.value = '';
-    addStickersModal.dataset.currentCategory = t;
-    toggleModal('cip-add-stickers-modal', true);
-    newStickersInput.focus();
+    // ... (此函数无任何修改，保持原样)
+    (addStickerTitle.textContent = `为「${t}」分类添加表情包`),
+      (newStickersInput.value = ''),
+      (addStickersModal.dataset.currentCategory = t),
+      toggleModal('cip-add-stickers-modal', !0),
+      newStickersInput.focus();
   }
 
-  // --- 颜色设置相关逻辑 ---
-  function saveColorPreset() {
-    const presetName = colorPresetNameInput.value.trim();
-    if (!presetName) {
-      alert('请输入配色方案名称！');
-      return;
-    }
-    if (colorPresets[presetName]) {
-      if (!confirm(`配色方案「${presetName}」已存在，是否覆盖？`)) return;
-    }
-    colorPresets[presetName] = {
-      panelBg: colorPanelBgInput.value,
-      border: colorBorderInput.value,
-      text: colorTextInput.value,
-      title: colorTitleInput.value,
-      tabsBg: colorTabsBgInput.value,
-      accent: colorAccentInput.value,
-      activeBg: colorActiveBgInput.value,
-      inputBg: colorInputBgInput.value,
-      delete: colorDeleteInput.value,
-      insertText: colorInsertTextInput.value,
-      insertHoverBg: colorInsertHoverBgInput.value,
-    };
-    localStorage.setItem('cip_color_presets', JSON.stringify(colorPresets));
-    renderColorPresets();
-    colorPresetNameInput.value = '';
-    alert(`配色方案「${presetName}」已保存！`);
-  }
-
-  function loadColorPreset(presetName) {
-    if (!presetName || !colorPresets[presetName]) return;
-    const preset = colorPresets[presetName];
-    colorPanelBgInput.value = preset.panelBg;
-    colorBorderInput.value = preset.border;
-    colorTextInput.value = preset.text;
-    colorTitleInput.value = preset.title;
-    colorTabsBgInput.value = preset.tabsBg;
-    colorAccentInput.value = preset.accent;
-    colorActiveBgInput.value = preset.activeBg;
-    colorInputBgInput.value = preset.inputBg;
-    colorDeleteInput.value = preset.delete;
-    colorInsertTextInput.value = preset.insertText;
-    colorInsertHoverBgInput.value = preset.insertHoverBg;
-    applyColors();
-  }
-
-  function renderColorPresets() {
-    colorPresetsSelect.innerHTML = '<option value="">选择已有配色方案</option>';
-    Object.keys(colorPresets).forEach(name => {
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      colorPresetsSelect.appendChild(option);
-    });
-  }
-
-  function applyColors() {
-    const root = document.documentElement;
-    root.style.setProperty('--cip-panel-bg-color', `rgba(${hexToRgb(colorPanelBgInput.value)}, 0.25)`);
-    root.style.setProperty('--cip-border-color', `rgba(${hexToRgb(colorBorderInput.value)}, 0.4)`);
-    root.style.setProperty('--cip-text-color', colorTextInput.value);
-    root.style.setProperty('--cip-title-color', colorTitleInput.value);
-    root.style.setProperty('--cip-tabs-bg-color', colorTabsBgInput.value);
-    root.style.setProperty('--cip-accent-color', colorAccentInput.value);
-    root.style.setProperty('--cip-active-bg-color', `rgba(${hexToRgb(colorActiveBgInput.value)}, 0.3)`);
-    root.style.setProperty('--cip-input-bg-color', `rgba(${hexToRgb(colorInputBgInput.value)}, 0.5)`);
-    root.style.setProperty('--cip-delete-color', colorDeleteInput.value);
-    root.style.setProperty('--cip-insert-text-color', colorInsertTextInput.value);
-    root.style.setProperty('--cip-insert-hover-bg-color', colorInsertHoverBgInput.value);
-  }
-
-  function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-  }
-
-  function loadDefaultColors() {
-    colorPanelBgInput.value = defaultColors.panelBg;
-    colorBorderInput.value = defaultColors.border;
-    colorTextInput.value = defaultColors.text;
-    colorTitleInput.value = defaultColors.title;
-    colorTabsBgInput.value = defaultColors.tabsBg;
-    colorAccentInput.value = defaultColors.accent;
-    colorActiveBgInput.value = defaultColors.activeBg;
-    colorInputBgInput.value = defaultColors.inputBg;
-    colorDeleteInput.value = defaultColors.delete;
-    colorInsertTextInput.value = defaultColors.insertText;
-    colorInsertHoverBgInput.value = defaultColors.insertHoverBg;
-    applyColors();
-  }
-
-  function loadSavedColorPresets() {
-    const saved = localStorage.getItem('cip_color_presets');
-    if (saved) {
-      colorPresets = JSON.parse(saved);
-      renderColorPresets();
-    }
-  }
-
-  colorSettingsButton.addEventListener('click', e => {
-    e.stopPropagation();
-    const isVisible = colorPanel.style.display === 'block';
-    if (isVisible) {
-      colorPanel.style.display = 'none';
-    } else {
-      const panelWidth = 300;
-      const panelHeight = 400;
-      const isMobile = window.innerWidth <= 768;
-      const left = Math.max(10, (window.innerWidth - panelWidth) / 2);
-      const top = Math.max(10, (window.innerHeight - panelHeight) / 2);
-      colorPanel.style.top = `${top}px`;
-      colorPanel.style.left = `${left}px`;
-      colorPanel.style.display = 'block';
-    }
-  });
-
-  colorCancelBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    colorPanel.style.display = 'none';
-    loadDefaultColors();
-  });
-
-  colorSaveBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    saveColorPreset();
-    colorPanel.style.display = 'none';
-  });
-
-  // 修复点击配色名称输入框关闭主面板和颜色面板的问题
-  colorPresetNameInput.addEventListener('click', e => e.stopPropagation());
-  colorPresetNameInput.addEventListener('focus', e => e.stopPropagation());
-
-  [colorPanelBgInput, colorBorderInput, colorTextInput, colorTitleInput, colorTabsBgInput, colorAccentInput, colorActiveBgInput, colorInputBgInput, colorDeleteInput, colorInsertTextInput, colorInsertHoverBgInput].forEach(input => {
-    input.addEventListener('input', applyColors);
-    input.addEventListener('click', e => e.stopPropagation());
-  });
-
-  colorPresetsSelect.addEventListener('change', e => {
-    e.stopPropagation();
-    loadColorPreset(e.target.value);
-  });
+  // --- 事件监听 ---
 
   emojiPicker.addEventListener('emoji-click', event => {
-    event.stopPropagation();
+    // ... (此函数无任何修改，保持原样)
     const emoji = event.detail.unicode;
     let target;
     if (currentTab === 'text') target = mainInput;
     else if (currentTab === 'voice') target = voiceMessageInput;
-    else if (currentTab === 'bunny') target = bunnyInput;
+    else if (currentTab === 'bunny') target = bunnyInput; 
 
     if (target) {
       const { selectionStart, selectionEnd, value } = target;
@@ -561,6 +439,7 @@
   });
 
   emojiPickerBtn.addEventListener('click', e => {
+    // ... (此函数无任何修改，保持原样)
     e.stopPropagation();
     const isVisible = emojiPicker.style.display === 'block';
     if (isVisible) {
@@ -568,8 +447,9 @@
     } else {
       const btnRect = emojiPickerBtn.getBoundingClientRect();
       const isMobile = window.innerWidth <= 768;
+
       if (isMobile) {
-        const pickerWidth = 300;
+        const pickerWidth = 300; 
         const pickerHeight = 350;
         const left = Math.max(10, (window.innerWidth - pickerWidth) / 2);
         const top = Math.max(10, (window.innerHeight - pickerHeight) / 2);
@@ -586,28 +466,18 @@
   });
 
   queryAll('.cip-tab-button').forEach(button =>
-    button.addEventListener('click', e => {
-      e.stopPropagation();
-      switchTab(e.currentTarget.dataset.tab);
-    }),
+    button.addEventListener('click', e => switchTab(e.currentTarget.dataset.tab)),
   );
-
   queryAll('#cip-text-content .cip-sub-option-btn').forEach(button =>
-    button.addEventListener('click', e => {
-      e.stopPropagation();
-      switchTextSubType(e.currentTarget.dataset.type);
-    }),
+    button.addEventListener('click', e => switchTextSubType(e.currentTarget.dataset.type)),
   );
+  recallButton.addEventListener('click', () => insertIntoSillyTavern(formatTemplates.recall));
 
-  recallButton.addEventListener('click', e => {
-    e.stopPropagation();
-    insertIntoSillyTavern(formatTemplates.recall);
-  });
-
-  insertButton.addEventListener('click', e => {
-    e.stopPropagation();
+  insertButton.addEventListener('click', () => {
+    // ... (此函数无任何修改，保持原样)
     let formattedText = '';
     let inputToClear = null;
+
     switch (currentTab) {
       case 'text':
         if (mainInput.value.trim()) {
@@ -620,11 +490,11 @@
           formattedText = formatTemplates.voice
             .replace('{duration}', voiceDurationInput.value)
             .replace('{message}', voiceMessageInput.value);
-          inputToClear = voiceMessageInput;
-          voiceDurationInput.value = '';
+          inputToClear = voiceMessageInput; 
+          voiceDurationInput.value = ''; 
         }
         break;
-      case 'bunny':
+      case 'bunny': 
         if (bunnyInput.value.trim()) {
           formattedText = formatTemplates.bunny.replace('{content}', bunnyInput.value);
           inputToClear = bunnyInput;
@@ -638,6 +508,7 @@
         }
         break;
     }
+
     if (formattedText) {
       insertIntoSillyTavern(formattedText);
       if (inputToClear) {
@@ -646,20 +517,15 @@
     }
   });
 
-  addCategoryBtn.addEventListener('click', e => {
-    e.stopPropagation();
+  addCategoryBtn.addEventListener('click', () => {
+    // ... (此函数无任何修改，保持原样)
     newCategoryNameInput.value = '';
     toggleModal('cip-add-category-modal', true);
     newCategoryNameInput.focus();
   });
-
-  cancelCategoryBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    toggleModal('cip-add-category-modal', false);
-  });
-
-  saveCategoryBtn.addEventListener('click', e => {
-    e.stopPropagation();
+  cancelCategoryBtn.addEventListener('click', () => toggleModal('cip-add-category-modal', false));
+  saveCategoryBtn.addEventListener('click', () => {
+    // ... (此函数无任何修改，保持原样)
     const name = newCategoryNameInput.value.trim();
     if (name && !stickerData[name]) {
       stickerData[name] = [];
@@ -670,14 +536,9 @@
     } else if (stickerData[name]) alert('该分类已存在！');
     else alert('请输入有效的分类名称！');
   });
-
-  cancelStickersBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    toggleModal('cip-add-stickers-modal', false);
-  });
-
-  saveStickersBtn.addEventListener('click', e => {
-    e.stopPropagation();
+  cancelStickersBtn.addEventListener('click', () => toggleModal('cip-add-stickers-modal', false));
+  saveStickersBtn.addEventListener('click', () => {
+    // ... (此函数无任何修改，保持原样)
     const category = addStickersModal.dataset.currentCategory;
     const text = newStickersInput.value.trim();
     if (!category || !text) return;
@@ -700,13 +561,36 @@
     } else alert('未能解析任何有效的表情包信息。');
   });
 
+    // --- 新增：主题设置事件监听 ---
+    themeButton.addEventListener('click', () => themePanel.classList.remove('hidden'));
+    closeThemePanelBtn.addEventListener('click', () => themePanel.classList.add('hidden'));
+
+    colorInputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty(e.target.dataset.var, e.target.value);
+        });
+    });
+
+    themeSelect.addEventListener('change', (e) => {
+        const themeName = e.target.value;
+        const theme = themeName === 'default' ? defaultTheme : themes[themeName];
+        applyTheme(theme);
+        localStorage.setItem('cip_last_active_theme_v1', themeName);
+    });
+
+    saveThemeBtn.addEventListener('click', saveCurrentTheme);
+    deleteThemeBtn.addEventListener('click', deleteSelectedTheme);
+
+
   // --- 5. 交互处理逻辑 ---
   function showPanel() {
+    // ... (此函数无任何修改，保持原样)
     if (inputPanel.classList.contains('active')) return;
     const btnRect = carrotButton.getBoundingClientRect();
     const panelWidth = inputPanel.offsetWidth || 350;
     const panelHeight = inputPanel.offsetHeight || 380;
     const isMobile = window.innerWidth <= 768;
+
     if (isMobile) {
       const left = Math.max(10, (window.innerWidth - panelWidth) / 2);
       const top = Math.max(10, (window.innerHeight - panelHeight) / 2);
@@ -722,30 +606,16 @@
       inputPanel.style.top = `${top}px`;
       inputPanel.style.left = `${left}px`;
     }
+
     inputPanel.classList.add('active');
   }
-
   function hidePanel() {
     inputPanel.classList.remove('active');
   }
 
   document.addEventListener('click', e => {
-    // 优化全局点击事件，确保点击颜色设置面板内部不关闭主面板或颜色面板
-    if (
-      inputPanel.classList.contains('active') &&
-      !inputPanel.contains(e.target) &&
-      !carrotButton.contains(e.target) &&
-      !colorPanel.contains(e.target)
-    ) {
+    if (inputPanel.classList.contains('active') && !inputPanel.contains(e.target) && !carrotButton.contains(e.target))
       hidePanel();
-    }
-    if (
-      colorPanel.style.display === 'block' &&
-      !colorPanel.contains(e.target) &&
-      !colorSettingsButton.contains(e.target)
-    ) {
-      colorPanel.style.display = 'none';
-    }
     if (
       emojiPicker.style.display === 'block' &&
       !emojiPicker.contains(e.target) &&
@@ -756,6 +626,7 @@
   });
 
   function dragHandler(e) {
+    // ... (此函数无任何修改，保持原样)
     let isClick = true;
     if (e.type === 'touchstart') e.preventDefault();
     const rect = carrotButton.getBoundingClientRect();
@@ -797,6 +668,7 @@
   carrotButton.addEventListener('touchstart', dragHandler, { passive: false });
 
   function loadButtonPosition() {
+    // ... (此函数无任何修改，保持原样)
     const savedPos = JSON.parse(localStorage.getItem('cip_button_position_v4'));
     if (savedPos?.top && savedPos?.left) {
       carrotButton.style.position = 'fixed';
@@ -813,14 +685,10 @@
           showPanel();
         }, 100);
       }
+
       if (emojiPicker.style.display === 'block') {
         setTimeout(() => {
           emojiPicker.style.display = 'none';
-        }, 100);
-      }
-      if (colorPanel.style.display === 'block') {
-        setTimeout(() => {
-          colorPanel.style.display = 'none';
         }, 100);
       }
     });
@@ -828,10 +696,9 @@
 
   function init() {
     loadStickerData();
+    loadThemes(); // 新增：加载主题
     renderCategories();
     loadButtonPosition();
-    loadSavedColorPresets();
-    loadDefaultColors();
     switchStickerCategory(Object.keys(stickerData)[0] || '');
     switchTab('text');
   }
