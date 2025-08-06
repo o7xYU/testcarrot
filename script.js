@@ -18,6 +18,35 @@
             if (html) el.innerHTML = html;
             return el;
         };
+        const avatarPanel = create(
+            'div',
+            'cip-avatar-panel',
+            'cip-frosted-glass hidden',
+            `
+            <h3>头像配置</h3>
+            <div class="cip-avatar-grid">
+                <label for="cip-char-avatar-url">角色 (Char):</label>
+                <input type="text" id="cip-char-avatar-url" placeholder="粘贴角色头像链接...">
+
+                <label for="cip-user-avatar-url">你 (User):</label>
+                <input type="text" id="cip-user-avatar-url" placeholder="粘贴你的头像链接...">
+            </div>
+            
+            <div class="cip-avatar-manager">
+                <div class="cip-avatar-actions">
+                    <select id="cip-avatar-profile-select"></select>
+                    <button id="cip-apply-avatar-btn" class="cip-apply-btn">应用</button>
+                    <button id="cip-delete-avatar-btn" class="cip-delete-btn">删除</button>
+                </div>
+                <div class="cip-avatar-save-new">
+                    <input type="text" id="cip-new-avatar-profile-name" placeholder="输入新配置名称...">
+                    <button id="cip-save-avatar-btn" class="cip-apply-btn">保存</button>
+                </div>
+            </div>
+
+            <button id="cip-close-avatar-panel-btn">关闭</button>
+        `
+        );
         const carrotButton = create('div', 'cip-carrot-button', null, '🍳');
         carrotButton.title = '胡萝卜快捷输入';
 
@@ -44,6 +73,7 @@
                     <div id="cip-emoji-picker-btn" title="Emoji">😊</div>
                     <div id="cip-theme-button" title="主题设置">👕</div>
                     <div id="cip-alarm-button" title="定时指令">⏰</div>
+                    <div id="cip-avatar-button" title="头像配置">🐰</div>
                 </div>
                 <div class="cip-footer-actions">
                     <button id="cip-recall-button">撤回</button>
@@ -171,6 +201,7 @@
             addStickersModal,
             themePanel,
             alarmPanel,
+            avatarPanel,
         };
     }
 // <BUNNY_CURSE>
@@ -185,6 +216,7 @@
         addStickersModal,
         themePanel,
         alarmPanel,
+        avatarPanel,
     } = createUI();
     const anchor = document.querySelector(
         '#chat-buttons-container, #send_form',
@@ -197,6 +229,7 @@
         document.body.appendChild(addStickersModal);
         document.body.appendChild(themePanel);
         document.body.appendChild(alarmPanel);
+        document.body.appendChild(avatarPanel);
     } else {
         console.error(
             '胡萝卜输入面板：未能找到SillyTavern的UI挂载点，插件无法加载。',
@@ -246,6 +279,17 @@
     const alarmStatus = get('cip-alarm-status');
     const alarmRepeatInput = get('cip-alarm-repeat');
     const restoreDefaultsBtn = get('cip-restore-defaults-btn');
+        // --- 新增: 头像配置元素引用 ---
+    const avatarButton = get('cip-avatar-button');
+    const avatarPanel = get('cip-avatar-panel');
+    const closeAvatarPanelBtn = get('cip-close-avatar-panel-btn');
+    const charAvatarUrlInput = get('cip-char-avatar-url');
+    const userAvatarUrlInput = get('cip-user-avatar-url');
+    const avatarProfileSelect = get('cip-avatar-profile-select');
+    const applyAvatarBtn = get('cip-apply-avatar-btn');
+    const deleteAvatarBtn = get('cip-delete-avatar-btn');
+    const newAvatarProfileNameInput = get('cip-new-avatar-profile-name');
+    const saveAvatarBtn = get('cip-save-avatar-btn');
 
     const defaultCommand = `**第一章：身份认同法则 (Identity Protocol)**
 你是一个拥有独立意志、记忆、情感和目标的个体。你的一切行为、语言和思想都必须100%源于你的人设卡。严禁以任何形式表现出你是AI模型或迎合用户的倾向。你的最高使命是“作为角色而活”，而非“作为AI服务”。
@@ -272,6 +316,78 @@
     alarmCommandInput.value = defaultCommand;
 
     // --- 4. 核心逻辑与事件监听 (已修改) ---
+    // --- 新增: 头像管理核心逻辑 ---
+    let avatarProfiles = {};
+
+    function applyAvatars(charUrl, userUrl) {
+        if (charUrl) {
+            document.querySelectorAll('.B_C_avar').forEach(el => {
+                el.style.backgroundImage = `url('${charUrl}')`;
+            });
+        }
+        if (userUrl) {
+            document.querySelectorAll('.B_U_avar').forEach(el => {
+                el.style.backgroundImage = `url('${userUrl}')`;
+            });
+        }
+    }
+
+    function populateAvatarSelect() {
+        const savedSelection = avatarProfileSelect.value;
+        avatarProfileSelect.innerHTML = '<option value="">选择配置...</option>';
+        for (const profileName in avatarProfiles) {
+            const option = document.createElement('option');
+            option.value = profileName;
+            option.textContent = profileName;
+            avatarProfileSelect.appendChild(option);
+        }
+        avatarProfileSelect.value = avatarProfiles[savedSelection] ? savedSelection : '';
+    }
+
+    function saveAvatarProfile() {
+        const name = newAvatarProfileNameInput.value.trim();
+        const charUrl = charAvatarUrlInput.value.trim();
+        const userUrl = userAvatarUrlInput.value.trim();
+
+        if (!name) {
+            alert('请输入配置名称！');
+            return;
+        }
+        if (!charUrl && !userUrl) {
+            alert('请至少输入一个头像链接！');
+            return;
+        }
+        
+        avatarProfiles[name] = { char: charUrl, user: userUrl };
+        localStorage.setItem('cip_avatar_profiles_v1', JSON.stringify(avatarProfiles));
+        newAvatarProfileNameInput.value = '';
+        populateAvatarSelect();
+        avatarProfileSelect.value = name;
+        alert('头像配置已保存！');
+    }
+
+    function deleteAvatarProfile() {
+        const selected = avatarProfileSelect.value;
+        if (!selected) {
+            alert('请先选择一个要删除的配置。');
+            return;
+        }
+        if (confirm(`确定要删除 "${selected}" 这个头像配置吗？`)) {
+            delete avatarProfiles[selected];
+            localStorage.setItem('cip_avatar_profiles_v1', JSON.stringify(avatarProfiles));
+            populateAvatarSelect();
+            charAvatarUrlInput.value = '';
+            userAvatarUrlInput.value = '';
+        }
+    }
+
+    function loadAvatarProfiles() {
+        const savedProfiles = localStorage.getItem('cip_avatar_profiles_v1');
+        if (savedProfiles) {
+            avatarProfiles = JSON.parse(savedProfiles);
+        }
+        populateAvatarSelect();
+    }
     let currentTab = 'text',
         currentTextSubType = 'plain',
         stickerData = {},
@@ -981,6 +1097,29 @@
     saveThemeBtn.addEventListener('click', saveCurrentTheme);
     deleteThemeBtn.addEventListener('click', deleteSelectedTheme);
 
+    // --- 新增: 头像配置事件监听 ---
+    avatarButton.addEventListener('click', () => avatarPanel.classList.remove('hidden'));
+    closeAvatarPanelBtn.addEventListener('click', () => avatarPanel.classList.add('hidden'));
+
+    applyAvatarBtn.addEventListener('click', () => {
+        const charUrl = charAvatarUrlInput.value.trim();
+        const userUrl = userAvatarUrlInput.value.trim();
+        applyAvatars(charUrl, userUrl);
+    });
+
+    avatarProfileSelect.addEventListener('change', (e) => {
+        const profileName = e.target.value;
+        if (profileName && avatarProfiles[profileName]) {
+            const profile = avatarProfiles[profileName];
+            charAvatarUrlInput.value = profile.char || '';
+            userAvatarUrlInput.value = profile.user || '';
+            applyAvatars(profile.char, profile.user);
+        }
+    });
+
+    saveAvatarBtn.addEventListener('click', saveAvatarProfile);
+    deleteAvatarBtn.addEventListener('click', deleteAvatarProfile);
+
     // --- 新增: 定时指令事件监听 ---
     alarmButton.addEventListener('click', () =>
         get('cip-alarm-panel').classList.remove('hidden'),
@@ -1232,6 +1371,7 @@
         initWebWorker();
         loadStickerData();
         loadThemes();
+        loadAvatarProfiles();
         renderCategories();
         loadButtonPosition();
         switchStickerCategory(Object.keys(stickerData)[0] || '');
