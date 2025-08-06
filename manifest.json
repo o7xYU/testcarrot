@@ -1,9 +1,9 @@
 {
   "name": "carrot-input-panel",
-  "display_name": "水不水灵",
-  "version": "2.4",
-  "manifest_version": 2,
-  "description": "一个提供主题定制和多种格式化输入选项的浮动面板。由BunnY制作，bunnyhole lab专供。",
+  "display_name": "兔子不吃胡萝卜",
+  "version": "4.4",
+  "manifest_version": 3,
+  "description": "一个提供多种格式化输入选项的浮动面板，由一个可拖拽的胡萝卜按钮触发。",
   "js": ["script.js"],
   "css": ["style.css"]
 }
